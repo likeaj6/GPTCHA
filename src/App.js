@@ -2,6 +2,12 @@ import React, { useEffect } from 'react';
 import './App.css';
 // import { useSelector } from 'react-redux';
 import MessageClient from './components/MessageClient';
+import AWS from 'aws-sdk';
+
+AWS.config.region = 'us-west-1'; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: 'us-east-1:c4c04401-fca9-4c6f-af09-aa662d13c47d',
+});
 
 // import { useDispatch } from 'react-redux';
 
