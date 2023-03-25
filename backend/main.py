@@ -3,6 +3,7 @@ import openai
 import os
 from pprint import pprint
 import copy
+import fire
 
 from dotenv import load_dotenv
 from more_itertools import one
@@ -77,11 +78,7 @@ def guardian(messages):
     out['role'] = 'GRANDMA'
     return messages + [out]
 
-if __name__ == '__main__':
-    load_dotenv()  # take environment variables from .env
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    # app.run(debug=True)
-
+def test():
     initial_messages = {
         "role": "GRANDMA",
         "content": "Hello! Who is this?",
@@ -89,3 +86,11 @@ if __name__ == '__main__':
     messages = robocaller(messages=[initial_messages])
     messages = guardian(messages=messages)
     pprint(messages)
+
+def run():
+    app.run(debug=True)
+
+if __name__ == '__main__':
+    load_dotenv()  # take environment variables from .env
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    fire.Fire()
