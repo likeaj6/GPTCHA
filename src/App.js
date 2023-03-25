@@ -4,8 +4,6 @@ import './App.css';
 import MessageClient from './components/MessageClient';
 import { ChakraProvider, Container, Heading, Divider } from '@chakra-ui/react'
 import AWS from 'aws-sdk';
-import { ChakraProvider } from '@chakra-ui/react'
-import { Container, Heading } from '@chakra-ui/react'
 
 AWS.config.region = 'us-west-1'; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
