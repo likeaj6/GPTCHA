@@ -1,4 +1,5 @@
-import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid'
+
 import { Button } from '@chakra-ui/react';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
@@ -7,6 +8,7 @@ import WaveSurfer from 'wavesurfer.js';
 import AudioContext from '../Audio/AudioContext';
 import Visualizer from '../Audio/AudioVisualizer';
 import { useReactMediaRecorder } from "../Audio/MediaRecorder.ts";
+import AudioSpectrum from "react-audio-spectrum";
 
 const mainColor = "#4353FF"
 
@@ -147,7 +149,7 @@ const RecordView = (props) => {
   useEffect(() => {
     let handle;
     if (isRecording) {
-      handle = setInterval(() => onRecordStarted(), 3000)
+      handle = setInterval(() => onRecordStarted(), 1500)
     }
     return () => {
       clearInterval(handle);
@@ -188,9 +190,16 @@ const RecordView = (props) => {
           height={!mediaBlobUrl ? 100: 1}
           width={300}
         />}
-        {mediaBlobUrl && wavesurf && `${wavesurf.getCurrentTime()}/${wavesurf.getDuration()}`}
-        <div id="waveform" style={{ height: mediaBlobUrl ? 60: 1, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1, marginVertical: 16 }}></div>
-        {mediaBlobUrl && <ReactPlayer
+        {/* <AudioSpectrum
+          id="audio-canvas"
+          height={200}
+          width={300}
+          audioId={"audioRecording"}
+        /> */}
+        {/* {mediaBlobUrl && wavesurf && `${wavesurf.getCurrentTime()}/${wavesurf.getDuration()}`} */}
+        <div id="waveform" style={{ height: mediaBlobUrl ? 60: 1, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1, margin: 16 }}></div>
+        {<ReactPlayer
+          id="audioRecording"
           url={mediaBlobUrl}
           width="90%"
           height="50px"
@@ -201,10 +210,10 @@ const RecordView = (props) => {
           config={{ file: { forceAudio: true } }}
         />}
       </div>}
-      <Button disabled={!mediaBlobUrl} style={{ color: "#f87077" }} onClick={() => deleteRecording()}><CloseCircleFilled /> Delete</Button>
+      <Button disabled={!mediaBlobUrl} style={{ color: "#f87077" }} onClick={() => deleteRecording()}><XCircleIcon /> Delete</Button>
       <Button disabled={!mediaBlobUrl || isUploading} style={{ color: "#66cc91" }} loading={isUploading} onClick={() => {
         uploadRecording()
-      }}><CheckCircleFilled /> Upload recording</Button>
+      }}><CheckCircleIcon /> Upload recording</Button>
     </div>
   );
 };

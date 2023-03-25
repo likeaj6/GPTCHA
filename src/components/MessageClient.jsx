@@ -9,13 +9,14 @@ import { LoremIpsum } from "lorem-ipsum";
 // import './Message.css';
 
 let GPTLogo = "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png"
-let roboIcon = "";
+let roboIcon = "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true";
 let exampleMessages = [{
   timestamp: new Date(),
-  text: "Hello world",
+  text: "Hello, I'm GPTCha. Who are you calling?",
   uid: "gptcha",
   photo: GPTLogo,
   email: "",
+  direction: "outgoing",
   displayName: "GPTCha",
 }]
 
@@ -49,7 +50,8 @@ function MessageClient() {
             timestamp: new Date(),
             text: lorem.generateSentences(1),
             uid: isGPTMessage ? "robo-caller": "gptcha",
-            photo: GPTLogo,
+            direction: isGPTMessage ? "outgoing": "incoming",
+            photo: isGPTMessage ? GPTLogo: roboIcon,
             email: "",
             displayName: isGPTMessage ? "GPTCha": "Robot Caller",
           }
