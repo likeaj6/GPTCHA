@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import './App.css';
 // import { useSelector } from 'react-redux';
 import MessageClient from './components/MessageClient';
-import { ChakraProvider } from '@chakra-ui/react'
-import { Container, Heading } from '@chakra-ui/react'
+import { ChakraProvider, Container, Heading, Divider } from '@chakra-ui/react'
 // import { useDispatch } from 'react-redux';
 
 function App() {
@@ -33,7 +32,10 @@ function App() {
         <Heading>
           GPTCHA
         </Heading>
-        {<MessageClient />}
+        <Divider/>
+        <Container className='containerWithShadow'>
+          {<MessageClient />}
+        </Container>
       </Container>
       </div>
   </ChakraProvider>);

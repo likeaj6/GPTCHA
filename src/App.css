@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .App {
   text-align: center;
 }
@@ -35,4 +39,11 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.containerWithShadow {
+  box-shadow: rgba(118, 143, 255, 0.3) 0px 4px 10px 0px !important;
+  padding: 1rem;
+  border-radius: 4px !important;
+  
 }

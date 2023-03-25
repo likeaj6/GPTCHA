@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Chat.css';
 // import { IconButton } from '@material-ui/core';
 // import MicNoneIcon from '@material-ui/icons/MicNone';
-
-import { ChatContainer, MessageList, Message } from '@chatscope/chat-ui-kit-react';
+import { ChatContainer, MessageList, Message, Avatar } from '@chatscope/chat-ui-kit-react';
 // import { useSelector } from 'react-redux';
 // import { selectUser } from '../../../features/userSlice';
 // import { selectChatId, selectChatName } from '../../../features/chatSlice';
@@ -20,9 +19,9 @@ let exampleMessages = [{
   displayName: "",
 }]
 
-function Chat() {
+function Chat(props) {
+  const { messages } = props
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState(exampleMessages);
   // const user = useSelector(selectUser);
   // const chatName = useSelector(selectChatName);
   // const chatId = useSelector(selectChatId);
@@ -55,23 +54,27 @@ function Chat() {
     setInput('');
   };
 
+  console.log("messages", messages)
   return (
     <ChatContainer>
-    <MessageList>
-      <Message model={{
-          message: "Hello world",
-          sentTime: "just now",
-          sender: "Joe"
-        }} />
-      {messages.map((message) => {
-        <Message model={{
-          ...message,
-            message: message.text,
-            sentTime: message.timestamp,
-            sender: message.displayName
-          }} />
-      })}
-    </MessageList>
+      <MessageList>
+        {/* <Message model={{
+            message: "Hello world",
+            sentTime: "just now",
+            sender: "Joe"
+          }} /> */}
+        {messages.map((message) => {
+          const { displayName, photo } = message
+          return (<Message model={{
+              ...message,
+              message: message.text,
+              sentTime: message.timestamp,
+              sender: message.displayName
+            }}>
+              <Avatar src={photo} name={displayName} />
+            </Message>)
+        })}
+      </MessageList>
     </ChatContainer>
   );
 }
