@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import './Chat.css';
 // import { IconButton } from '@material-ui/core';
 // import MicNoneIcon from '@material-ui/icons/MicNone';
-import Message from '../Message/Message';
+
+import { ChatContainer, MessageList, Message } from '@chatscope/chat-ui-kit-react';
 // import { useSelector } from 'react-redux';
 // import { selectUser } from '../../../features/userSlice';
 // import { selectChatId, selectChatName } from '../../../features/chatSlice';
@@ -12,7 +13,7 @@ import Message from '../Message/Message';
 
 let exampleMessages = [{
   timestamp: new Date(),
-  message: "Hello world",
+  text: "Hello world",
   uid: "gptcha",
   photo: "",
   email: "",
@@ -55,39 +56,23 @@ function Chat() {
   };
 
   return (
-    <div className="chat">
-      <div className="chat__header">
-        <h4>
-          <span className="chat__name">{"GPTCHA"}</span>
-        </h4>
-        <strong>Details</strong>
-      </div>
-
-      {/* Chat  messages */}
-      <div className="chat__messages">
-          {messages.map(({ id, ...data }) => (
-            <Message key={id} id={id} contents={data} />
-          ))}
-        {/* <FlipMove>
-        </FlipMove> */}
-      </div>
-
-      {/* Chat  input*/}
-      <div className="chat__input">
-        <form>
-          <input
-            type="text"
-            placeholder="iMessage"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <button onClick={sendMessage}>Send Message</button>
-        </form>
-        {/* <IconButton>
-          <MicNoneIcon />
-        </IconButton> */}
-      </div>
-    </div>
+    <ChatContainer>
+    <MessageList>
+      <Message model={{
+          message: "Hello world",
+          sentTime: "just now",
+          sender: "Joe"
+        }} />
+      {messages.map((message) => {
+        <Message model={{
+          ...message,
+            message: message.text,
+            sentTime: message.timestamp,
+            sender: message.displayName
+          }} />
+      })}
+    </MessageList>
+    </ChatContainer>
   );
 }
 

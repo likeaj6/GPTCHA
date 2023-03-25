@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import './App.css';
 // import { useSelector } from 'react-redux';
 import MessageClient from './components/MessageClient';
-
+import { ChakraProvider } from '@chakra-ui/react'
+import { Container, Heading } from '@chakra-ui/react'
 // import { useDispatch } from 'react-redux';
 
 function App() {
@@ -26,7 +27,16 @@ function App() {
     //   }
     // });
   }, []);
-  return <div className="app">{<MessageClient />}</div>;
+  return (<ChakraProvider>
+      <div className="app">
+      <Container>
+        <Heading>
+          GPTCHA
+        </Heading>
+        {<MessageClient />}
+      </Container>
+      </div>
+  </ChakraProvider>);
 }
 
 export default App;
