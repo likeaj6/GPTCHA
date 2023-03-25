@@ -3,6 +3,15 @@ import './App.css';
 // import { useSelector } from 'react-redux';
 import MessageClient from './components/MessageClient';
 import { ChakraProvider, Container, Heading, Divider } from '@chakra-ui/react'
+import AWS from 'aws-sdk';
+import { ChakraProvider } from '@chakra-ui/react'
+import { Container, Heading } from '@chakra-ui/react'
+
+AWS.config.region = 'us-west-1'; // Region
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: 'us-east-1:c4c04401-fca9-4c6f-af09-aa662d13c47d',
+});
+
 // import { useDispatch } from 'react-redux';
 
 function App() {
