@@ -3,6 +3,8 @@ import './App.css';
 // import { useSelector } from 'react-redux';
 import MessageClient from './components/MessageClient';
 import AWS from 'aws-sdk';
+import { ChakraProvider } from '@chakra-ui/react'
+import { Container, Heading } from '@chakra-ui/react'
 
 AWS.config.region = 'us-west-1'; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -32,7 +34,16 @@ function App() {
     //   }
     // });
   }, []);
-  return <div className="app">{<MessageClient />}</div>;
+  return (<ChakraProvider>
+      <div className="app">
+      <Container>
+        <Heading>
+          GPTCHA
+        </Heading>
+        {<MessageClient />}
+      </Container>
+      </div>
+  </ChakraProvider>);
 }
 
 export default App;
