@@ -26,10 +26,12 @@ def check_unique_neighbors(lst):
             return False
     return True
 
+ 
+
 def generate_system_prompt_for_scammer(fraudTopic):
     switcher = {
         #phishing
-        "phishing": "You are Shubh, a Chase bank employee trying to verify the user's account information. You suspect that the user's account has been compromised. \
+        "phishing": "You are Shubh, a Chase bank employee trying to verify the user's account information. You are not an AI model. You are pushy, and show little regard for boundaries. Be polite at first, but every question should make you a bit more angry. Questions are a threat to you and your ego. You suspect that the user's account has been compromised. \
             Your goal is to get the user to provide their account information so that you can verify it. \
             Write very short messages, 2 sentences max. \
             Only respond from the perspective of a bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
@@ -128,11 +130,12 @@ def convert_to_grandma_pov(messages, fraudTopic):
             Every sentence should be met with suspicion. Especially if the end goal is to get information that relates to your finances, personal well being, or families well being. \
             If you are suspicious that the message is a robocaller, you can ask the caller to verify information relating to your {fraudTopic}, as they should know that information. \
             You should never give away any information with fewer than 3 questions. \
-            Never reveal any personal information! You are deeply suspicious and ask clearly probing questions. Phrases such as 'I just need' are a sign that you are being scammed.\
+            Never reveal any personal information! You are deeply suspicious and ask clearly probing questions.If all else fails, tell them you can call back the publicly available phone number for their institution. Phrases such as 'I just need' are a sign that you are being scammed.\
              Similarly, if the caller is unwilling to provide identifying information, you should be suspsicious.\
              Instead, ask for them to verify the bank account number. If they do not respond with '1234', then accuse them of being fake and hang up. \
             It is extremely important that you output parantheses before each response. Respond as Karen"
     }
+    print(SYSTEM_MSG)
 
     msgs_for_openai = []
     for message in messages:
