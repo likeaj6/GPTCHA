@@ -102,20 +102,21 @@ const RecordingWrappedView = (props) => {
   };
 
   useEffect(() => {
+    // let handle;
     let handle = setInterval(updateTime, 1000)
-    setTimeout(() => {
-      if (visualizerRef.current) {
-        let canvas = visualizerRef.current
-        Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 60, "#000", mainColor)
-      }
-    }, 1000)
-    setTimeout(() => {
-      if (visualizer2Ref.current) {
-        let canvas = visualizer2Ref.current
-        Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 60, "#000", mainColor)
-        // setInterval(updateTime, 1000)
-      }
-    }, 1000)
+    // setTimeout(() => {
+    //   if (visualizerRef.current) {
+    //     let canvas = visualizerRef.current
+    //     Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 60, "#000", mainColor)
+    //   }
+    // }, 1000)
+    // setTimeout(() => {
+    //   if (visualizer2Ref.current) {
+    //     let canvas = visualizer2Ref.current
+    //     Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 60, "#000", mainColor)
+    //     // setInterval(updateTime, 1000)
+    //   }
+    // }, 1000)
     if (!wavesurf) {
       let wavesurf = WaveSurfer.create({
         container: document.querySelector('#waveform'),

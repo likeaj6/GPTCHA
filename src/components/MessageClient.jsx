@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Chat from './Chat/Chat';
 
 import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
@@ -42,6 +42,8 @@ function MessageClient() {
   const [audioQueue, setAudioQueue] = useState([]);
   const [allAudio, setAllAudio] = useState([]);
   const [playingAudio, setPlayingAudio] = useState(true);
+  const currentAudioStateRef = useRef();
+  currentAudioStateRef.current = playingAudio
 
   const addMessage = (message) => {
     setMessages((messages) => [...messages, message]);
@@ -94,7 +96,7 @@ function MessageClient() {
         let audioBlob = response.data
         const blob = new Blob([audioBlob], { type: 'audio/mpeg' });
         const audioUrl = URL.createObjectURL(blob);
-        console.log("audioUrl", audioUrl)
+        // console.log("audioUrl", audioUrl)
         if (audioQueue.length > 0) {
           setAudioQueue((audioQueue) => [...audioQueue, audioUrl])
         } else {
@@ -138,15 +140,19 @@ function MessageClient() {
     }
   }
 
-  let NUM_INITIAL_MESSAGES = 2
+  let NUM_INITIAL_MESSAGES = 3
 
   useEffect(() => {
     console.log("playingAudio", playingAudio)
-    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "gptcha" && !playingAudio) {
+    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "gptcha" && !currentAudioStateRef.current) {
       generateNextRoboMessage(messages)
+      // setTimeout(() => {
+      // }, 3000)
     }
-    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "robo-caller" && !playingAudio) {
+    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "robo-caller" && !currentAudioStateRef.current) {
       generateNextGuardianMessage(messages)
+      // setTimeout(() => {
+      // }, 3000)
     }
   }, [messages, playingAudio])
 
