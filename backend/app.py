@@ -1,6 +1,6 @@
 import re
 from datetime import date
-from flask import Flask, request, session
+from flask import Flask, request
 from flask_cors import CORS
 import openai
 import os
@@ -16,6 +16,7 @@ app = Flask(__name__)
 app.secret_key = 'daniel_secret'
 CORS(app)
 
+GLOBAL_THOUGHTS = []
 
 def convert_to_scammer_pov(messages):
     assert isinstance(messages, list), type(messages)
@@ -93,7 +94,9 @@ def robocaller(messages=None):
 
 @app.route('/guardian', methods=['POST'])
 def guardian(messages=None):
-    print(f'CURRENT THOUGHTS ARE {session.get("thoughts", [])}')
+    global GLOBAL_THOUGHTS
+    print(f'{GLOBAL_THOUGHTS=}')
+
     try:
         messages = request.get_json()['messages']
     except Exception:
@@ -116,8 +119,7 @@ def guardian(messages=None):
             return ''
         out['content'] = re.sub(r'\((.*?)\)', replace, out['content']).strip()
         thoughts = ' '.join(thoughts)
-        old_thoughts = session.get('thoughts', [])
-        session['thoughts'] = old_thoughts + [thoughts]
+        GLOBAL_THOUGHTS.append(thoughts)
     else:
         out = {'content': 'Hello! Who is this?'}
 
@@ -130,7 +132,7 @@ def guardian(messages=None):
         'direction': "outgoing",
         'displayName': "GPTCha",
     }
-    return {'messages': messages + [out], 'thoughts': session.get('thoughts', [])}
+    return {'messages': messages + [out], 'thoughts': GLOBAL_THOUGHTS}
 
 
 @app.route('/')
