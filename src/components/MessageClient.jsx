@@ -5,8 +5,8 @@ import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from '@chatscope/chat-ui-kit-react';
   import RecordView from './AudioRecorder/Recorder';
 import { LoremIpsum } from "lorem-ipsum";
-import chatApi from '../api/chat'
-import { Button, Text, Container } from '@chakra-ui/react';
+import chatApi, { generateGuardianMessage } from '../api/chat'
+import { Button, Text, Container, Select } from '@chakra-ui/react';
 
 // import './Message.css';
 
@@ -33,6 +33,7 @@ let exampleThoughts = [{
 }]
 
 function MessageClient() {
+  const [fraudTopic, setFraudTopic] = useState("bank account");
   const [messages, setMessages] = useState(exampleMessages);
   const [thoughts, setThoughts] = useState(exampleThoughts);
   const [messageIsStreaming, setMessageIsStreaming] = useState(false);
@@ -107,9 +108,8 @@ function MessageClient() {
     }
   }
 
-  useEffect(() => {
-    // generate initial response upon picking up
-    chatApi.generateGuardianMessage().then((response) => {
+  const generateInitialGuardianMessage = async () => {
+     chatApi.generateGuardianMessage([], fraudTopic).then((response) => {
       setMessageIsStreaming(false)
       console.log("response", response)
         let newMessages = response.data.messages
@@ -119,6 +119,12 @@ function MessageClient() {
         generateAudioSynthesis(newMessages)
       }
     })
+  }
+
+
+  useEffect(() => {
+    // generate initial response upon picking up
+   generateInitialGuardianMessage()
   }, [])
 
   const onStopPlaying = () => {
@@ -133,7 +139,7 @@ function MessageClient() {
     }
   }
 
-  let NUM_INITIAL_MESSAGES = 4
+  let NUM_INITIAL_MESSAGES = 2
 
   useEffect(() => {
     console.log("playingAudio", playingAudio)
@@ -145,12 +151,43 @@ function MessageClient() {
     }
   }, [messages, playingAudio])
 
-  let roboScore = Math.min(Math.round(Math.random()*100) + 50, 100)
+  let roboScore = Math.min(Math.round(Math.random()*60 * messages.length) + 50, 100)
 
   return (
     <div className="">
       <div style={{ position:"relative" }}>
+      {<Container className="border border-solid border-gray-300 rounded-lg p-4 mb-8 containerWithShadow">
+        <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Live call'}</Text>
+        {<Button colorScheme={"teal"} type="primary" loading={true} disabled={false} onClick={() => {
+          setMessages([])
+          generateInitialGuardianMessage([], fraudTopic)
+        }}>{allAudio?.length ? 'Restart': 'Start'} Call</Button>}
+        <Text className="text-xs text-center width-full">
+          OR
+        </Text>
+        <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Use pre-existing robo call'}</Text>
+        <Select placeholder='Select option' defaultValue={'bank account'} value={fraudTopic} onChange={(e) => {
+          let option = e.target.value
+          fraudTopic(option)
+              // if (option == 'bank account') {
+              //   setAllAudio(bankFraudAudio)
+              // } else if (option == 'car insurance') {
+              //   setAllAudio(carInsuranceAudio)
+              // } else if (option == 'nigerian prince') {
+              //   setAllAudio(nigerianPrinceAudio)
+              // }
+              // setPlayingAudio(true)
+              // setCurrentAudioStreamUrl(allAudio[0])
+              // setCurrentAudioUser("robo-caller")
+            }}
+          >
+          <option value='bank account'>bank account</option>
+          <option value='car insurance'>Car insurance</option>
+          <option value='nigerian prince'>Nigerian prince</option>
+        </Select>
+      </Container>}
         <RecordView
+          playingAudio={playingAudio}
           currentAudioUser={currentAudioUser}
           allAudio={allAudio}
           currentAudioStreamUrl={currentAudioStreamUrl}

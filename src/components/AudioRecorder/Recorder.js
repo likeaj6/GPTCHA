@@ -19,7 +19,7 @@ let GPTLogo = "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.co
 let roboIcon = "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true";
 
 const RecordingWrappedView = (props) => {
-  const { onRecordStarted, allAudio, currentAudioUser } = props
+  const { onRecordStarted, allAudio, currentAudioUser, playingAudio } = props
   const {
     status,
     startRecording,
@@ -198,10 +198,8 @@ const RecordingWrappedView = (props) => {
 
   return (
     <div className="p-4">
-      {!isRecording && <Container className="border border-solid border-gray-300 rounded-lg p-4 mb-8">
+      {/* {!isRecording && <Container className="border border-solid border-gray-300 rounded-lg p-4 mb-8">
         <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Live call'}</Text>
-        {/* <Button onClick={() => setIsExerciseModalOpen(true)} style={{ width: '100%' }}><PlusOutlined />exercise</Button> */}
-
         {!isRecording && <Button colorScheme={"teal"} type="primary" loading={isRecording} disabled={isRecording} onClick={() => {
           deleteRecording()
           startRecording() 
@@ -216,8 +214,7 @@ const RecordingWrappedView = (props) => {
           <option value='option2'>Call example 2</option>
           <option value='option3'>Call example 3</option>
         </Select>
-      </Container>}
-      {/* <Button onClick={() => setIsExerciseModalOpen(true)} style={{ width: '100%' }}><PlusOutlined />exercise</Button> */}
+      </Container>} */}
       <Container className="border border-solid border-gray-300 rounded-lg p-4">
       {isRecording && <Button disabled={!isRecording || audioUrl} onClick={() => {
         stopRecording()
@@ -230,7 +227,7 @@ const RecordingWrappedView = (props) => {
             {`${isRecording ? 'Live': 'Recording'} `} 
             {` Preview `}
             <Text style={{ textAlign: "left", color: "#00f", fontWeight: "bold", fontSize: 12 }}>
-              {` ${status?.toUpperCase()} `}
+              {status ? ` ${status?.toUpperCase()} `: playingAudio ? "SPEAKING": "IDLE"}
               {duration != null && duration}
             </Text>
           </Text>
