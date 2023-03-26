@@ -23,7 +23,7 @@ const RecordingWrappedView = (props) => {
   const handleMediaRecorderStop = (blobUrl, blob) => {
     console.log("handleMediaRecorderStop invoked with the following arguments:", blobUrl, blob);
     setBlob(blob);
-    handleStopRecordingForWhisper(blob);
+    submitRecordingToWhisper(blob);
   }
   const {
     status,
@@ -44,7 +44,7 @@ const RecordingWrappedView = (props) => {
 
   const [filename, setFilename] = useState(`test.webm`)
   const [blob, setBlob] = useState()
-  const [whisperTranscription, setWhisperTranscription] = useState('');
+  const [whisperTranscriptions, setWhisperTranscriptions] = useState([]);
 
   const lottie1Ref = useRef();
   const lottie2Ref = useRef();
@@ -61,7 +61,7 @@ const RecordingWrappedView = (props) => {
     startRecording()
   }, [])
 
-  const handleStopRecordingForWhisper = async (blob) => {
+  const submitRecordingToWhisper = async (blob) => {
     // Create a FormData object and append the blob to it
     const formData = new FormData();
     formData.append('file', blob, 'audio.wav');
@@ -72,14 +72,15 @@ const RecordingWrappedView = (props) => {
       const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer [api key goes here]',
+          'Authorization': 'Bearer [API key goes here]',
         },
         body: formData
       });
 
       if (response.ok) {
         const data = await response.json();
-        setWhisperTranscription(data.text);
+        whisperTranscriptions.push(data.text);
+        setWhisperTranscriptions([...whisperTranscriptions]);
         startRecording();
       } else {
         console.error(`Error: ${response.statusText}`);
@@ -262,6 +263,10 @@ const RecordingWrappedView = (props) => {
     }
   }, [allAudio])
 
+  const WhisperTranscriptionsMap = () => {
+    return whisperTranscriptions.map((transcriptionText) => <Text>{transcriptionText}</Text>);
+  }
+
   return (
     <div className="p-4">
       {/* {!isRecording && <Container className="border border-solid border-gray-300 rounded-lg p-4 mb-8">
@@ -286,7 +291,7 @@ const RecordingWrappedView = (props) => {
         stopRecording()
         setEnd(moment())
       }}>Transcribe</Button>}
-      {whisperTranscription !== '' && <Text style={{ textAlign: "left", color: "#00f", fontWeight: "bold", fontSize: 12 }}>{whisperTranscription}</Text>}
+      {whisperTranscriptions.length > 0 && <WhisperTranscriptionsMap />}
       {<div style={{
         position: "relative", marginTop: 8, height: 160 }}>
         <div style={{ position: "relative", display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
