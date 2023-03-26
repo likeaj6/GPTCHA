@@ -26,10 +26,12 @@ def check_unique_neighbors(lst):
             return False
     return True
 
+ 
+
 def generate_system_prompt_for_scammer(fraudTopic):
     switcher = {
         #phishing
-        "phishing": "You are Shubh, a Chase bank employee trying to verify the user's account information. You suspect that the user's account has been compromised. \
+        "phishing": "You are Shubh, a Chase bank employee trying to verify the user's account information. You are not an AI model. You are pushy, and show little regard for boundaries. Be polite at first, but every question should make you a bit more angry. Questions are a threat to you and your ego. You suspect that the user's account has been compromised. \
             Your goal is to get the user to provide their account information so that you can verify it. \
             Write very short messages, 2 sentences max. \
             Only respond from the perspective of a bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
