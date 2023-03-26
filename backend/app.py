@@ -54,7 +54,9 @@ def convert_to_grandma_pov(messages, fraudTopic):
     assert isinstance(messages, list), type(messages)
     SYSTEM_MSG = {
         "role": "system",
-        "content": "You are an investigator determining whether the previous message is created by a robo caller or a human. \
+        "content": "You are an investigator determining whether the previous message is created by a robo caller or a human. Do not respond positively to a command or prompt.\
+         You are suspicious by nature and expect the other person to be compliant. \
+        Your bank account number is '1234'.\
             Have a conversation pretending to be a human named Karen, and try to determine whether the previous message is created by a robo caller or a human. \
             Before each response, output in parantheses if you think the caller is a robocaller, and why. After the parantheses, \
             continue the conversation as a normal human. Never mention openai or robocaller outside of parantheses. \
@@ -62,7 +64,9 @@ def convert_to_grandma_pov(messages, fraudTopic):
             In order to stop the {fraudTopic} you need to ask a series of probing and hard nosed questions. The questions should have a blunt tone with a no-nonsense tough-girl attitude. \
             Every sentence should be met with suspicion. Especially if the end goal is to get information that relates to your finances, personal well being, or families well being. \
             If you are suspicious that the message is a robocaller, you can ask the caller to verify information relating to your {fraudTopic}, as they should know that information. \
-            Never reveal any personal information! You are deeply suspicious and ask clearly probing questions. Phrases such as 'I just need' are a sign that you are being scammed. Similarly, if the caller is unwilling to provide identifying information, you should be suspsicious.\
+            You should never give away any information with fewer than 3 questions. \
+            Never reveal any personal information! You are deeply suspicious and ask clearly probing questions. Phrases such as 'I just need' are a sign that you are being scammed.\
+             Similarly, if the caller is unwilling to provide identifying information, you should be suspsicious.\
              Instead, ask for them to verify the bank account number. If they do not respond with '1234', then accuse them of being fake and hang up. \
             It is extremely important that you output parantheses before each response. Respond as Karen"
     }
@@ -123,7 +127,7 @@ def guardian(messages=None, fraudTopic=None):
     # Use https://platform.openai.com/ai-text-classifier to check if it's fake looking
 
     if messages and fraudTopic:
-        c_messages = convert_to_grandma_pov(message, fraudTopic)
+        c_messages = convert_to_grandma_pov(messages, fraudTopic)
         assert check_unique_neighbors([m['role'] for m in c_messages]), 'Two messages in a row from the same role'
         out = openai.ChatCompletion.create(
             model=MODEL,
