@@ -20,6 +20,11 @@ let roboIcon = "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpe
 
 const RecordingWrappedView = (props) => {
   const { onRecordStarted, allAudio, currentAudioUser, playingAudio } = props
+  const handleMediaRecorderStop = (blobUrl, blob) => {
+    console.log("handleMediaRecorderStop invoked with the following arguments:", blobUrl, blob);
+    setBlob(blob);
+    handleStopRecordingForWhisper(blob);
+  }
   const {
     status,
     startRecording,
@@ -27,13 +32,9 @@ const RecordingWrappedView = (props) => {
     clearBlobUrl,
     previewAudioStream,
     mediaBlobUrl,
-  } = useReactMediaRecorder({ video: false, onStop: (blobUrl, blob) => { setBlob(blob) } });
+  } = useReactMediaRecorder({ video: false, onStop: (blobUrl, blob) => handleMediaRecorderStop(blobUrl, blob) });
   let audioUrl = props.currentAudioStreamUrl ?? mediaBlobUrl
   // console.log("currentAudioStreamUrl", props.currentAudioStreamUrl, audioUrl)
-
-  const [isRecordingForWhisper, setIsRecordingForWhisper] = useState(false);
-  const mediaRecorder = useRef(null);
-  const recordedChunks = useRef([]);
 
   const [wavesurf, setWavesurf] = useState(null)
   const [startTime, setStart] = useState(moment())
@@ -55,16 +56,14 @@ const RecordingWrappedView = (props) => {
   startTimeRef.current = startTime
   endTimeRef.current = endTime
 
-  const handleStartRecordingForWhisper = async () => {
-    setIsRecordingForWhisper(true);
-  };
+  useEffect(() => {
+    startRecording()
+  }, [])
 
-  const handleStopRecordingForWhisper = async () => {
-    const blob = 'todo: get blob via the interface provided by useReactMediaRecorder';
-
+  const handleStopRecordingForWhisper = async (blob) => {
     // Create a FormData object and append the blob to it
     const formData = new FormData();
-    formData.append('file', blob, filename);
+    formData.append('file', blob, 'audio.wav');
     formData.append('model', 'whisper-1');
 
     // Send the POST request with the FormData object
@@ -72,22 +71,20 @@ const RecordingWrappedView = (props) => {
       const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer [openAI api key goes here]',
+          'Authorization': 'Bearer [token goes here]',
         },
         body: formData
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
+        console.log(data)
       } else {
         console.error(`Error: ${response.statusText}`);
       }
     } catch (error) {
       console.error('Error:', error);
     }
-
-    setIsRecordingForWhisper(false);
   };
 
   useEffect(() => {
@@ -283,12 +280,10 @@ const RecordingWrappedView = (props) => {
         </Select>
       </Container>} */}
       <Container className="border border-solid border-gray-300 rounded-lg p-4">
-      {!isRecordingForWhisper && <Button onClick={handleStartRecordingForWhisper}>Start recording for Whisper</Button>}
-      {isRecordingForWhisper && <Button onClick={handleStopRecordingForWhisper}>Stop recording for Whisper</Button>}
-      {isRecording && <Button disabled={!isRecording || audioUrl} onClick={() => {
+      {<Button disabled={!isRecording || audioUrl} onClick={() => {
         stopRecording()
         setEnd(moment())
-      }}>Stop Recording</Button>}
+      }}>Stop Recording and Transcribe</Button>}
       {<div style={{
         position: "relative", marginTop: 8, height: 160 }}>
         <div style={{ position: "relative", display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
