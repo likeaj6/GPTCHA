@@ -1,4 +1,6 @@
-from flask import Flask
+from datetime import date
+from flask import Flask, request
+from flask_cors import CORS
 import openai
 import os
 from pprint import pprint
@@ -7,10 +9,17 @@ import fire
 
 from dotenv import load_dotenv
 from more_itertools import one
+from dataclasses import dataclass
 
 
 MODEL = "gpt-3.5-turbo"
 app = Flask(__name__)
+CORS(app)
+
+INITIAL_MESSAGE = {
+    "direction": "outgoing",
+    "text": "Hello! Who is this?",
+}
 
 def convert_to_scammer_pov(messages):
     SYSTEM_MSG = {
@@ -21,15 +30,18 @@ def convert_to_scammer_pov(messages):
         Only respond from the perspective of the robo caller. Never say that you are a robo caller or a language model created by OpenAI. Never Mention OpenAI."
     }
 
-    messages = copy.deepcopy(messages)
+    msgs_for_openai = []
     for message in messages:
-        assert message["role"] in ["GRANDMA", "SCAMMER"]
-        if message["role"] == "GRANDMA":
-            message["role"] = "user"
-        elif message["role"] == "SCAMMER":
-            message["role"] = "assistant"
+        role = {
+            'outgoing': 'assistant',
+            'incoming': 'user'
+        }
+        msgs_for_openai.append({
+            'role': role[message['direction']],
+            'content': message['text']
+        })
 
-    return [SYSTEM_MSG] + messages
+    return [SYSTEM_MSG] + msgs_for_openai
 
 def convert_to_grandma_pov(messages):
     SYSTEM_MSG = {
@@ -37,19 +49,28 @@ def convert_to_grandma_pov(messages):
         "content": "You are a investigator determined to determine whether the previous message is created by a robo caller or a human."
     }
 
-    messages = copy.deepcopy(messages)
+    msgs_for_openai = []
     for message in messages:
-        assert message["role"] in ["system", "GRANDMA", "SCAMMER"]
-        if message["role"] == "GRANDMA":
-            message["role"] = "assistant"
-        elif message["role"] == "SCAMMER":
-            message["role"] = "user"
+        role = {
+            'outgoing': 'user',
+            'incoming': 'assistant'
+        }
+        msgs_for_openai.append({
+            'role': role[message['direction']],
+            'content': message['text']
+        })
 
-    return [SYSTEM_MSG] + messages
+    return [SYSTEM_MSG] + msgs_for_openai
 
 
-@app.route('/robocaller')
-def robocaller(messages):
+@app.route('/robocaller', methods=['POST'])
+def robocaller(messages=None):
+    try:
+        messages = request.get_json()
+    except Exception:
+        pass
+
+    messages = messages or [INITIAL_MESSAGE]
     assert isinstance(messages, list)
     converted_messages = convert_to_scammer_pov(messages)
 
@@ -58,11 +79,19 @@ def robocaller(messages):
         messages=converted_messages,
     )
     out = one(out['choices'])['message'].to_dict()
-    out['role'] = 'SCAMMER'
-    return messages + [out]
+    out = [{
+        'timestamp': date.today().strftime('%Y-%m-%d'),
+        'text': out['content'],
+        'uid': "robo-caller",
+        'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
+        'email': "",
+        'direction': "incoming",
+        'displayName': "Robot Caller",
+    }]
+    return messages + out
 
 
-@app.route('/guardian')
+@app.route('/guardian', methods=['POST'])
 def guardian(messages):
     assert isinstance(messages, list)
     c_messages = convert_to_grandma_pov(messages)
@@ -75,20 +104,31 @@ def guardian(messages):
         messages=c_messages,
     )
     out = one(out['choices'])['message'].to_dict()
-    out['role'] = 'GRANDMA'
+    out = [{
+        'timestamp': date.today().strftime('%Y-%m-%d'),
+        'text': out['content'],
+        'uid': "gptcha",
+        'photo': "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true",
+        'email': "",
+        'direction': "outgoing",
+        'displayName': "GPTCha",
+    }]
     return messages + [out]
 
+
+@app.route('/')
+def home():
+    return 'Hello Grandma!'
+
+
 def test():
-    initial_messages = {
-        "role": "GRANDMA",
-        "content": "Hello! Who is this?",
-    }
-    messages = robocaller(messages=[initial_messages])
+    messages = robocaller()
     messages = guardian(messages=messages)
     pprint(messages)
 
+
 def run():
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
 
 if __name__ == '__main__':
     load_dotenv()  # take environment variables from .env
