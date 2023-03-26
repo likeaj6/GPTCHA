@@ -1,6 +1,6 @@
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid'
 
-import { Button, } from '@chakra-ui/react';
+import { Container, Button, Select, Text } from '@chakra-ui/react';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
@@ -167,14 +167,27 @@ const RecordingWrappedView = (props) => {
   }, [isRecording])
   return (
     <div className="p-4">
-      <h4>{'Live call'}</h4>
-      {/* <Button onClick={() => setIsExerciseModalOpen(true)} style={{ width: '100%' }}><PlusOutlined />exercise</Button> */}
+      {!isRecording && <Container className="border border-solid border-gray-300 rounded-lg p-4 mb-8">
+        <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Live call'}</Text>
+        {/* <Button onClick={() => setIsExerciseModalOpen(true)} style={{ width: '100%' }}><PlusOutlined />exercise</Button> */}
 
-      {!isRecording && <Button colorScheme={"teal"} type="primary" loading={isRecording} disabled={isRecording} onClick={() => {
-        deleteRecording()
-        startRecording() 
-        setStart(moment())
-      }}>{mediaBlobUrl ? 'Restart': 'Start'} Call</Button>}
+        {!isRecording && <Button colorScheme={"teal"} type="primary" loading={isRecording} disabled={isRecording} onClick={() => {
+          deleteRecording()
+          startRecording() 
+          setStart(moment())
+        }}>{mediaBlobUrl ? 'Restart': 'Start'} Call</Button>}
+        <Text className="text-xs text-center width-full">
+          OR
+        </Text>
+        <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Use pre-existing robo call'}</Text>
+        <Select placeholder='Select option'>
+          <option value='option1'>Call example 1</option>
+          <option value='option2'>Call example 2</option>
+          <option value='option3'>Call example 3</option>
+        </Select>
+      </Container>}
+      {/* <Button onClick={() => setIsExerciseModalOpen(true)} style={{ width: '100%' }}><PlusOutlined />exercise</Button> */}
+      <Container className="border border-solid border-gray-300 rounded-lg p-4">
       {isRecording && <Button disabled={!isRecording || mediaBlobUrl} onClick={() => {
         stopRecording()
         setEnd(moment())
@@ -182,10 +195,10 @@ const RecordingWrappedView = (props) => {
       {<div style={{
         position: "relative", marginTop: 8, height: 160 }}>
         <div style={{ display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
-          <p style={{ color: "#aaa" }}>
+          <Text className="text-gray-600 uppercase">
             {`${isRecording ? 'Live': 'Recording'} `} 
             {` Preview: `}
-          </p>
+          </Text>
           <p style={{ textAlign: "left", color: "#00f", fontWeight: "bold" }}>
             {` ${status?.toUpperCase()} `}
             {duration != null && duration}
@@ -227,19 +240,22 @@ const RecordingWrappedView = (props) => {
         /> */}
         {/* {mediaBlobUrl && wavesurf && `${wavesurf.getCurrentTime()}/${wavesurf.getDuration()}`} */}
       </div>}
+      </Container>
       {props.children}
-      <div id="waveform" style={{ height: 120, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
-      {<ReactPlayer
-        id="audioRecording"
-        url={mediaBlobUrl}
-        width="90%"
-        height="50px"
-        playing={false}
-        controls={true}
-        onStart={() => startPlaying()}
-        onPause={() => stopPlaying()}
-        config={{ file: { forceAudio: true } }}
-      />}
+      {mediaBlobUrl && <Container className="border border-solid border-gray-100 rounded-lg p-4">
+        <div id="waveform" style={{ height: 120, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
+        {<ReactPlayer
+          id="audioRecording"
+          url={mediaBlobUrl}
+          width="90%"
+          height="50px"
+          playing={false}
+          controls={true}
+          onStart={() => startPlaying()}
+          onPause={() => stopPlaying()}
+          config={{ file: { forceAudio: true } }}
+        />}
+      </Container>}
       {/* <div className="w-full">
         <Button disabled={!mediaBlobUrl} style={{ color: "#f87077" }} onClick={() => deleteRecording()}><XCircleIcon /> Delete</Button>
         <Button disabled={!mediaBlobUrl || isUploading} style={{ color: "#66cc91" }} loading={isUploading} onClick={() => {

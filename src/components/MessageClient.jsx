@@ -6,7 +6,7 @@ import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from
   import RecordView from './AudioRecorder/Recorder';
 import { LoremIpsum } from "lorem-ipsum";
 import chatApi from '../api/chat'
-import { Button } from '@chakra-ui/react';
+import { Button, Text, Container } from '@chakra-ui/react';
 
 // import './Message.css';
 
@@ -80,6 +80,8 @@ function MessageClient() {
     })
   }, [])
 
+  let roboScore = Math.min(Math.round(Math.random()*100) + 50, 100)
+
   return (
     <div className="Message">
       <div style={{ position:"relative" }}>
@@ -99,7 +101,7 @@ function MessageClient() {
           // setMessages([...messages, testMessage]);
         }} onUpload={() => {}}>
 
-          <MainContainer className='flex w-full my-8 rounded-lg'>
+          <MainContainer className='flex w-full my-8 rounded-lg border border-solid border-gray-100'>
             <Chat 
               messages={messages}
               messageIsStreaming={messageIsStreaming}
@@ -123,6 +125,14 @@ function MessageClient() {
               Generate next grandma message
             </Button>
           </div>
+          <Container className="border border-solid border-gray-300 rounded-lg p-4 my-8">
+            <Text
+              className='uppercase font-bold font-lg'
+              style={{
+                color: roboScore > 60 ? "red": "green"
+              }}
+            >Robo-score: {roboScore}</Text>
+          </Container>
         </RecordView>
       </div>
     </div>
