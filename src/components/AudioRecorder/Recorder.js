@@ -44,6 +44,7 @@ const RecordingWrappedView = (props) => {
 
   const [filename, setFilename] = useState(`test.webm`)
   const [blob, setBlob] = useState()
+  const [whisperTranscription, setWhisperTranscription] = useState('');
 
   const lottie1Ref = useRef();
   const lottie2Ref = useRef();
@@ -71,14 +72,15 @@ const RecordingWrappedView = (props) => {
       const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer [token goes here]',
+          'Authorization': 'Bearer [api key goes here]',
         },
         body: formData
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data)
+        setWhisperTranscription(data.text);
+        startRecording();
       } else {
         console.error(`Error: ${response.statusText}`);
       }
@@ -283,7 +285,8 @@ const RecordingWrappedView = (props) => {
       {<Button disabled={!isRecording || audioUrl} onClick={() => {
         stopRecording()
         setEnd(moment())
-      }}>Stop Recording and Transcribe</Button>}
+      }}>Transcribe</Button>}
+      {whisperTranscription !== '' && <Text style={{ textAlign: "left", color: "#00f", fontWeight: "bold", fontSize: 12 }}>{whisperTranscription}</Text>}
       {<div style={{
         position: "relative", marginTop: 8, height: 160 }}>
         <div style={{ position: "relative", display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
