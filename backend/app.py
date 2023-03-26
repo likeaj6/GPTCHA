@@ -254,9 +254,9 @@ def guardian(messages=None, fraudTopic=None):
         #     n=1
         # )
         score_choices = completion.choices
-        scoreText = score_choices[0].text.trim()
+        scoreText = score_choices[0].text.strip()
         reasoning_choices = completion.choices
-        reasoningText = reasoning_choices[0].text.trim()
+        reasoningText = reasoning_choices[0].text.strip()
 
 
         

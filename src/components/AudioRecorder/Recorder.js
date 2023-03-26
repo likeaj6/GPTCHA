@@ -18,9 +18,9 @@ let roboIcon = "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpe
 
 const RecordingWrappedView = (props) => {
   const { onRecordStarted, allAudio, currentAudioUser, playingAudio } = props
-  const handleMediaRecorderStop = (blobUrl, blob) => {
-    submitRecordingToWhisper(blob);
-  }
+  // const handleMediaRecorderStop = (blobUrl, blob) => {
+  //   submitRecordingToWhisper(blob);
+  // }
   const {
     status,
     startRecording,
@@ -28,7 +28,7 @@ const RecordingWrappedView = (props) => {
     clearBlobUrl,
     previewAudioStream,
     mediaBlobUrl,
-  } = useReactMediaRecorder({ video: false, onStop: (blobUrl, blob) => handleMediaRecorderStop(blobUrl, blob) });
+  } = useReactMediaRecorder({ video: false });
   let audioUrl = props.currentAudioStreamUrl ?? mediaBlobUrl
 
   const [wavesurf, setWavesurf] = useState(null)
@@ -46,9 +46,9 @@ const RecordingWrappedView = (props) => {
   startTimeRef.current = startTime
   endTimeRef.current = endTime
 
-  useEffect(() => {
-    startRecording()
-  }, [])
+  // useEffect(() => {
+    // startRecording()
+  // }, [])
 
   const submitRecordingToWhisper = async (blob) => {
     const formData = new FormData();
