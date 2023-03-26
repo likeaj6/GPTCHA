@@ -29,7 +29,9 @@ const RecordingWrappedView = (props) => {
     mediaBlobUrl,
   } = useReactMediaRecorder({ video: false, onStop: (blobUrl, blob) => { setBlob(blob) } });
   let audioUrl = props.currentAudioStreamUrl ?? mediaBlobUrl
-  console.log("currentAudioStreamUrl", props.currentAudioStreamUrl, audioUrl)
+  // console.log("currentAudioStreamUrl", props.currentAudioStreamUrl, audioUrl)
+
+  const [isRecordingForWhisper, setIsRecordingForWhisper] = useState(false);
 
   const [wavesurf, setWavesurf] = useState(null)
   const [startTime, setStart] = useState(moment())
@@ -50,6 +52,15 @@ const RecordingWrappedView = (props) => {
   endTimeRef.current = endTime
   startTimeRef.current = startTime
   endTimeRef.current = endTime
+
+  const handleStartRecordingForWhisper = async () => {
+    setIsRecordingForWhisper(true);
+  };
+
+  const handleStopRecordingForWhisper = () => {
+    setIsRecordingForWhisper(false);
+  };
+
   useEffect(() => {
     let handle;
     // let handle = setInterval(updateTime, 1000)
@@ -109,16 +120,16 @@ const RecordingWrappedView = (props) => {
     const sourceNode = audioCtx.createMediaStreamSource(previewAudioStream)
     sourceNode.connect(analyser)
   } else {
-    console.log("updating lottie animation", allAudio.length)
+    // console.log("updating lottie animation", allAudio.length)
     if (allAudio?.length % 2 == 1) {
-      console.log("pausing robo audiowave")
+      // console.log("pausing robo audiowave")
       lottie1Ref.current?.start?.();
       if (!playingAudio) {
         lottie1Ref.current?.stop?.();
       }
     }
     if (allAudio?.length % 2 == 0) {
-      console.log("starting gptcha audiowave")
+      // console.log("starting gptcha audiowave")
       lottie2Ref.current?.start?.();
       if (!playingAudio) {
         lottie2Ref.current?.stop?.();
@@ -128,19 +139,19 @@ const RecordingWrappedView = (props) => {
 
     const audio = new Audio();
     const sourceNode = audioCtx.createMediaElementSource(audio);
-    console.log("audioCtx.destination", audioCtx)
+    // console.log("audioCtx.destination", audioCtx)
     sourceNode.connect(analyser);
-    console.log("playing audio", audio)
+    // console.log("playing audio", audio)
     audio.play();
   }
   const updateTime = () => {
-    console.log("updating time", endTimeRef.current != null && startTimeRef.current != null)
+    // console.log("updating time", endTimeRef.current != null && startTimeRef.current != null)
     if (endTimeRef.current != null && startTimeRef.current != null) {
       // var date = new Date()
       let diff = moment().diff(startTimeRef.current, 'seconds')
       // date.setSeconds(moment().diff(startTime, 'seconds')); // specify value for SECONDS here
       let duration = `${Math.floor(diff / 60)}:${diff%60 < 10 ? `0${diff%60}` : diff%60}`
-      console.log("duration", duration)
+      // console.log("duration", duration)
 
       setDuration(duration)
     }
@@ -173,7 +184,7 @@ const RecordingWrappedView = (props) => {
     const data = new FormData()
     const file = new File([blob], `${filename.replace('.webm', '')}.webm`)
 
-    console.log(file);
+    // console.log(file);
 
     const formData = new FormData();
 
@@ -201,7 +212,7 @@ const RecordingWrappedView = (props) => {
   function stopPlaying() {
     // We use an external audio element
     wavesurf.pause();
-    console.log("stop playing")
+    // console.log("stop playing")
     if (props.onStopPlaying) props.onStopPlaying()
   }
   const isRecording = status == 'recording'
@@ -243,6 +254,8 @@ const RecordingWrappedView = (props) => {
         </Select>
       </Container>} */}
       <Container className="border border-solid border-gray-300 rounded-lg p-4">
+      {!isRecordingForWhisper && <Button onClick={handleStartRecordingForWhisper}>Start recording for Whisper</Button>}
+      {isRecordingForWhisper && <Button onClick={handleStopRecordingForWhisper}>Stop recording for Whisper</Button>}
       {isRecording && <Button disabled={!isRecording || audioUrl} onClick={() => {
         stopRecording()
         setEnd(moment())
