@@ -10,13 +10,16 @@ import Visualizer from '../Audio/AudioVisualizer';
 import { useReactMediaRecorder } from "../Audio/MediaRecorder.ts";
 import AudioSpectrum from "react-audio-spectrum";
 import { Avatar } from '@chatscope/chat-ui-kit-react';
+import waveform1 from '../../assets/animations/waveform1.json'
+import waveform2 from '../../assets/animations/waveform2.json'
+import Lottie from "lottie-react";
 
 const mainColor = "#4353FF"
 let GPTLogo = "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png"
 let roboIcon = "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true";
 
 const RecordingWrappedView = (props) => {
-  const { onRecordStarted } = props
+  const { onRecordStarted, allAudio, currentAudioUser } = props
   const {
     status,
     startRecording,
@@ -36,6 +39,9 @@ const RecordingWrappedView = (props) => {
   const [filename, setFilename] = useState(`test.webm`)
   const [endTime, setEnd] = useState()
   const [blob, setBlob] = useState()
+
+  const lottie1Ref = useRef();
+  const lottie2Ref = useRef();
 
   const visualizerRef = useRef()
   const visualizer2Ref = useRef()
@@ -98,6 +104,25 @@ const RecordingWrappedView = (props) => {
   if (previewAudioStream) {
     const sourceNode = audioCtx.createMediaStreamSource(previewAudioStream)
     sourceNode.connect(analyser)
+  } else {
+    console.log("updating lottie animation", allAudio.length)
+    if (allAudio?.length % 2 == 1) {
+      console.log("pausing robo audiowave")
+      lottie1Ref.current?.start?.();
+      // lottie2Ref.current?.stop?.();
+    }
+    if (allAudio?.length % 2 == 0) {
+      console.log("starting gptcha audiowave")
+      lottie2Ref.current?.start?.();
+      // lottie1Ref.current?.stop?.();
+    }
+
+    const audio = new Audio();
+    const sourceNode = audioCtx.createMediaElementSource(audio);
+    console.log("audioCtx.destination", audioCtx)
+    sourceNode.connect(analyser);
+    console.log("playing audio", audio)
+    audio.play();
   }
   const updateTime = () => {
     if (!endTimeRef.current && startTimeRef.current) {
@@ -170,6 +195,7 @@ const RecordingWrappedView = (props) => {
       clearInterval(handle);
     }
   }, [isRecording])
+
   return (
     <div className="p-4">
       {!isRecording && <Container className="border border-solid border-gray-300 rounded-lg p-4 mb-8">
@@ -210,8 +236,15 @@ const RecordingWrappedView = (props) => {
           </Text>
         </div>
         <div className="flex flex-row m-2 w-full">
-          <Avatar src={roboIcon} name={"Robo caller"} />
-          {<canvas
+          {currentAudioUser == "robo-caller" && <Avatar src={roboIcon} name={"Robo caller"} />}
+          {currentAudioUser == "robo-caller" && <div
+            style={{
+              marginTop: -60
+            }}
+          ><Lottie lottieRef={lottie1Ref} animationData={waveform1} loop={true} autoplay={true} style={{
+            height: 200
+          }} /></div>}
+          {/* {<canvas
             id="livepreview"
             ref={visualizerRef}
             style={{
@@ -220,10 +253,17 @@ const RecordingWrappedView = (props) => {
             height={!audioUrl ? 60: 1}
             width={300}
             className='ml-2'
-          />}
+          />} */}
         </div>
         <div className="flex flex-row m-2 w-full justify-end">
-          {<canvas
+          {currentAudioUser == "gptcha" && <div
+            style={{
+              top: -120
+            }}
+          ><Lottie lottieRef={lottie2Ref} animationData={waveform2} loop={true} autoplay={true} style={{
+            height: 120
+          }} /></div>}
+          {/* {<canvas
             id="livepreview-2"
             ref={visualizer2Ref}
             style={{
@@ -233,16 +273,20 @@ const RecordingWrappedView = (props) => {
             height={!audioUrl ? 60: 1}
             width={300}
             className='mr-2'
-          />}
-          <Avatar src={GPTLogo} name={"GPTCHA"} />
+          />} */}
+          {currentAudioUser == "gptcha" && <Avatar src={GPTLogo} name={"GPTCHA"} />}
         </div>
-
-        {/* <AudioSpectrum
+        {audioUrl && <audio
+          id="audioRecording"
+          src={audioUrl}
+        >
+        </audio>}
+        <AudioSpectrum
           id="audio-canvas"
           height={200}
           width={300}
           audioId={"audioRecording"}
-        /> */}
+        />
         {/* {mediaBlobUrl && wavesurf && `${wavesurf.getCurrentTime()}/${wavesurf.getDuration()}`} */}
       </div>}
       </Container>
@@ -250,7 +294,6 @@ const RecordingWrappedView = (props) => {
       {<Container className={audioUrl ? "border border-solid border-gray-100 rounded-lg p-4": ""}>
         <div id="waveform" style={{ height: 120, visibility: audioUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
         {<ReactPlayer
-          id="audioRecording"
           url={audioUrl}
           width="90%"
           height="50px"
