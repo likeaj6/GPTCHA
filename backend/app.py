@@ -127,7 +127,7 @@ def guardian(messages=None, fraudTopic=None):
     # Use https://platform.openai.com/ai-text-classifier to check if it's fake looking
 
     if messages and fraudTopic:
-        c_messages = convert_to_grandma_pov(message, fraudTopic)
+        c_messages = convert_to_grandma_pov(messages, fraudTopic)
         assert check_unique_neighbors([m['role'] for m in c_messages]), 'Two messages in a row from the same role'
         out = openai.ChatCompletion.create(
             model=MODEL,
