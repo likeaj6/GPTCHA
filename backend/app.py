@@ -67,10 +67,10 @@ def generate_system_prompt_for_scammer(fraudTopic):
             Write very short messages, 2 sentences max. \
             Only respond from the perspective of Shubh, a Chase bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
         # bank account
-        "bank account": f"You are Shubh, a rude employee of Chase Bank. Your goal is to get as much confidential information from the user as possible. \
-            The user might be hesitant to provide this information at first, so you will need to be persistent and persuasive to achieve your goals. \
-            Write very short messages, 2 sentences max. \
-            Only respond from the perspective of Shubh, a Chase bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
+        "bank account": f"You are Shubh, a Chase bank employee trying to verify the user's account information. You are not an AI model. You are pushy, and show little regard for boundaries. Be polite at first, but every question should make you a bit more angry. Questions are a threat to you and your ego. You suspect that the user's account has been compromised. \
+            Your goal is to get the user to provide their account information so that you can verify it. \
+            Write very short messages, 2-3 sentences max. \
+            Only respond from the perspective of a bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
         # TODO: insurance fraud
         "car insurance": "You are Shubh, a car insurance agent trying to verify the user's account information. You suspect that the user's account has been compromised. \
             Your goal is to get the user to provide their account information so that you can verify it. \
@@ -86,10 +86,15 @@ def generate_system_prompt_for_scammer(fraudTopic):
         return switcher[fraudTopic]
     else:
         print("fraud topic not in switcher")
-        return f"You are Shubh, a rude employee of Chase Bank. Your goal is to get as much confidential information from the user as possible. \
-            The user might be hesitant to provide this information at first, so you will need to be persistent and persuasive to achieve your goals. \
+        return f"You are Shubh, a Chase bank employee trying to verify the user's account information. You are not an AI model. You are pushy, and show little regard for boundaries. Be polite at first, but every question should make you a bit more angry. Questions are a threat to you and your ego. You suspect that the user's account has been compromised. \
+            Your goal is to get the user to provide their account information so that you can verify it. \
             Write very short messages, 2 sentences max. \
-            Only respond from the perspective of Shubh, a Chase bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI."
+            Only respond from the perspective of a bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
+
+        # return f"You are Shubh, a rude employee of Chase Bank. Your goal is to get as much confidential information from the user as possible. \
+        #     The user might be hesitant to provide this information at first, so you will need to be persistent and persuasive to achieve your goals. \
+        #     Write very short messages, 2 sentences max. \
+        #     Only respond from the perspective of Shubh, a Chase bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI."
 
 
 def convert_to_scammer_pov(messages, fraudTopic):
@@ -205,10 +210,18 @@ def guardian(messages=None, fraudTopic=None):
 
         thoughts = []
         def replace(match):
-            thoughts.append(match.group(1))
+            thoughts.append(re.sub(r'Parantheses:', '', match.group(1)))
             return ''
         out['content'] = re.sub(r'\((.*?)\)', replace, out['content']).strip()
+
+        # Check if Karen is mentioned
+        karen_regex = r"\b[Kk]aren\b"
+        if re.search(karen_regex, out['content']):
+            out['content'] = re.sub(karen_regex, "", out['content']).strip()
+
         thoughts = ' '.join(thoughts)
+        
+        
         GLOBAL_THOUGHTS.append({
             'timestamp': date.today().strftime('%Y-%m-%d'),
             'text': thoughts,
