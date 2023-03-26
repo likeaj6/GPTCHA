@@ -40,11 +40,6 @@ function MessageClient() {
         // messages.map((message) => addMessage(message))
         setMessages(newMessages)
       }
-      if (newMessages.length < 5) {
-        setTimeout(() => {
-          generateNextGuardianMessage(newMessages)
-        }, 1000)
-      }
     })
   }
 
@@ -57,12 +52,6 @@ function MessageClient() {
           setMessages(newMessages)
           // messages.map((message) => addMessage(message))
         }
-        if (newMessages.length < 5) {
-          setTimeout(() => {
-            generateNextRoboMessage(newMessages)
-          }, 1000)
-        }
-
     })
   }
 
@@ -76,9 +65,20 @@ function MessageClient() {
         // messages.map((message) => addMessage(message))
         setMessages(newMessages)
       }
-      generateNextRoboMessage(newMessages)
     })
   }, [])
+
+  let NUM_INITIAL_MESSAGES = 5
+
+  useEffect(() => {
+    console.log()
+    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "gptcha") {
+      generateNextRoboMessage(messages)
+    }
+    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "robo-caller") {
+      generateNextGuardianMessage(messages)
+    }
+  }, [messages])
 
   let roboScore = Math.min(Math.round(Math.random()*100) + 50, 100)
 

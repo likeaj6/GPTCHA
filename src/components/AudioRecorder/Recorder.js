@@ -195,14 +195,14 @@ const RecordingWrappedView = (props) => {
       {<div style={{
         position: "relative", marginTop: 8, height: 160 }}>
         <div style={{ display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
-          <Text className="text-gray-600 uppercase">
+          <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>
             {`${isRecording ? 'Live': 'Recording'} `} 
-            {` Preview: `}
+            {` Preview `}
+            <Text style={{ textAlign: "left", color: "#00f", fontWeight: "bold", fontSize: 12 }}>
+              {` ${status?.toUpperCase()} `}
+              {duration != null && duration}
+            </Text>
           </Text>
-          <p style={{ textAlign: "left", color: "#00f", fontWeight: "bold" }}>
-            {` ${status?.toUpperCase()} `}
-            {duration != null && duration}
-          </p>
         </div>
         <div className="flex flex-row m-2 w-full">
           <Avatar src={roboIcon} name={"Robo caller"} />
@@ -254,6 +254,9 @@ const RecordingWrappedView = (props) => {
           onStart={() => startPlaying()}
           onPause={() => stopPlaying()}
           config={{ file: { forceAudio: true } }}
+          style={{
+            marginTop: 16
+          }}
         />}
       </Container>}
       {/* <div className="w-full">
