@@ -25,6 +25,8 @@ const RecordingWrappedView = (props) => {
     previewAudioStream,
     mediaBlobUrl,
   } = useReactMediaRecorder({ video: false, onStop: (blobUrl, blob) => { setBlob(blob) } });
+  let audioUrl = props.currentAudioStreamUrl ?? mediaBlobUrl
+  console.log("currentAudioStreamUrl", props.currentAudioStreamUrl, audioUrl)
 
   const [wavesurf, setWavesurf] = useState(null)
   const [startTime, setStart] = useState()
@@ -86,10 +88,10 @@ const RecordingWrappedView = (props) => {
   }, [])
 
   useEffect(() => {
-    if (wavesurf && mediaBlobUrl) {
-      wavesurf.load(mediaBlobUrl);
+    if (wavesurf && audioUrl) {
+      wavesurf.load(audioUrl);
     }
-  }, [mediaBlobUrl])
+  }, [audioUrl])
 
   let audioCtx = AudioContext.getAudioContext()
   let analyser = AudioContext.getAnalyser()
@@ -149,10 +151,13 @@ const RecordingWrappedView = (props) => {
   function startPlaying() {
     // We use an external audio element
     wavesurf.playPause();
+    if (props.onStartPlaying) props.onStartPlaying()
   }
   function stopPlaying() {
     // We use an external audio element
     wavesurf.pause();
+    console.log("stop playing")
+    if (props.onStopPlaying) props.onStopPlaying()
   }
   const isRecording = status == 'recording'
 
@@ -175,7 +180,7 @@ const RecordingWrappedView = (props) => {
           deleteRecording()
           startRecording() 
           setStart(moment())
-        }}>{mediaBlobUrl ? 'Restart': 'Start'} Call</Button>}
+        }}>{audioUrl ? 'Restart': 'Start'} Call</Button>}
         <Text className="text-xs text-center width-full">
           OR
         </Text>
@@ -188,7 +193,7 @@ const RecordingWrappedView = (props) => {
       </Container>}
       {/* <Button onClick={() => setIsExerciseModalOpen(true)} style={{ width: '100%' }}><PlusOutlined />exercise</Button> */}
       <Container className="border border-solid border-gray-300 rounded-lg p-4">
-      {isRecording && <Button disabled={!isRecording || mediaBlobUrl} onClick={() => {
+      {isRecording && <Button disabled={!isRecording || audioUrl} onClick={() => {
         stopRecording()
         setEnd(moment())
       }}>Stop Recording</Button>}
@@ -212,7 +217,7 @@ const RecordingWrappedView = (props) => {
             style={{
               // visibility: !mediaBlobUrl ? 'visible':'hidden',
             }}
-            height={!mediaBlobUrl ? 60: 1}
+            height={!audioUrl ? 60: 1}
             width={300}
             className='ml-2'
           />}
@@ -225,7 +230,7 @@ const RecordingWrappedView = (props) => {
               // visibility: !mediaBlobUrl ? 'visible':'hidden',
               float: "right",
             }}
-            height={!mediaBlobUrl ? 60: 1}
+            height={!audioUrl ? 60: 1}
             width={300}
             className='mr-2'
           />}
@@ -242,16 +247,17 @@ const RecordingWrappedView = (props) => {
       </div>}
       </Container>
       {props.children}
-      {<Container className={mediaBlobUrl ? "border border-solid border-gray-100 rounded-lg p-4": ""}>
-        <div id="waveform" style={{ height: 120, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
+      {<Container className={audioUrl ? "border border-solid border-gray-100 rounded-lg p-4": ""}>
+        <div id="waveform" style={{ height: 120, visibility: audioUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
         {<ReactPlayer
           id="audioRecording"
-          url={mediaBlobUrl}
+          url={audioUrl}
           width="90%"
           height="50px"
-          playing={false}
+          playing={true}
           controls={true}
           onStart={() => startPlaying()}
+          onEnded={() => stopPlaying()}
           onPause={() => stopPlaying()}
           config={{ file: { forceAudio: true } }}
           style={{
