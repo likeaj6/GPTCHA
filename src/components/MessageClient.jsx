@@ -85,9 +85,8 @@ function MessageClient() {
   const generateAudioSynthesis = async (currentMessages) => {
     let mostRecentMessage = currentMessages.slice(-1).pop()
     let isGPTMessage = mostRecentMessage.uid == "gptcha"
-    let indian_male = "FeRac7RecyPzJ8JYNgQL"
-    let american_female_old = "RgXs1J7z2juXOZc1xQ6t"
-    let modelName = isGPTMessage ? american_female_old: indian_male
+
+    let modelName = isGPTMessage ? process.env.REACT_APP_GPTCHA_VOICE_ID: process.env.REACT_APP_ROBOCALLER_VOICE_ID
     // let modelName = isGPTMessage ? '21m00Tcm4TlvDq8ikWAM': 'TxGEqnHWrfWFTfGW9XjX'
     if (mostRecentMessage) {
       chatApi.generateSpeechFromText(mostRecentMessage.text, modelName).then((response) => {
