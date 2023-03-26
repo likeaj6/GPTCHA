@@ -16,12 +16,9 @@ MODEL = "gpt-3.5-turbo"
 app = Flask(__name__)
 CORS(app)
 
-INITIAL_MESSAGE = {
-    "direction": "outgoing",
-    "text": "Hello! Who is this?",
-}
 
 def convert_to_scammer_pov(messages):
+    assert isinstance(messages, list), type(messages)
     SYSTEM_MSG = {
         "role": "system",
         "content": "You are an actor playing the role of a automated robo caller. Your goal is to get as much confidential information from the user as possible. \
@@ -44,6 +41,7 @@ def convert_to_scammer_pov(messages):
     return [SYSTEM_MSG] + msgs_for_openai
 
 def convert_to_grandma_pov(messages):
+    assert isinstance(messages, list), type(messages)
     SYSTEM_MSG = {
         "role": "system",
         "content": "You are a investigator determined to determine whether the previous message is created by a robo caller or a human."
@@ -66,12 +64,10 @@ def convert_to_grandma_pov(messages):
 @app.route('/robocaller', methods=['POST'])
 def robocaller(messages=None):
     try:
-        messages = request.get_json()
+        messages = request.get_json()['messages']
     except Exception:
         pass
 
-    messages = messages or [INITIAL_MESSAGE]
-    assert isinstance(messages, list)
     converted_messages = convert_to_scammer_pov(messages)
 
     out = openai.ChatCompletion.create(
@@ -79,41 +75,48 @@ def robocaller(messages=None):
         messages=converted_messages,
     )
     out = one(out['choices'])['message'].to_dict()
-    out = [{
+    out = {
         'timestamp': date.today().strftime('%Y-%m-%d'),
         'text': out['content'],
         'uid': "robo-caller",
-        'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
+        'photo': "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true",
         'email': "",
         'direction': "incoming",
         'displayName': "Robot Caller",
-    }]
-    return messages + out
+    }
+    return {'messages': messages + [out]}
 
 
 @app.route('/guardian', methods=['POST'])
-def guardian(messages):
-    assert isinstance(messages, list)
-    c_messages = convert_to_grandma_pov(messages)
+def guardian(messages=None):
+    try:
+        messages = request.get_json()['messages']
+    except Exception:
+        pass
 
     # Embed documents and query for a relevant question based on the role
     # Use https://platform.openai.com/ai-text-classifier to check if it's fake looking
 
-    out = openai.ChatCompletion.create(
-        model=MODEL,
-        messages=c_messages,
-    )
-    out = one(out['choices'])['message'].to_dict()
-    out = [{
+    if messages:
+        c_messages = convert_to_grandma_pov(messages)
+        out = openai.ChatCompletion.create(
+            model=MODEL,
+            messages=c_messages,
+        )
+        out = one(out['choices'])['message'].to_dict()
+    else:
+        out = {'content': 'Hello! Who is this?'}
+
+    out = {
         'timestamp': date.today().strftime('%Y-%m-%d'),
         'text': out['content'],
         'uid': "gptcha",
-        'photo': "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true",
+        'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
         'email': "",
         'direction': "outgoing",
         'displayName': "GPTCha",
-    }]
-    return messages + [out]
+    }
+    return {'messages': messages + [out]}
 
 
 @app.route('/')
@@ -122,7 +125,8 @@ def home():
 
 
 def test():
-    messages = robocaller()
+    messages = guardian(messages=[])
+    messages = robocaller(messages=messages)
     messages = guardian(messages=messages)
     pprint(messages)
 
