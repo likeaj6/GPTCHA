@@ -6,12 +6,12 @@ let apiEndpoint = isProd ? 'https://gptcha-backend.onrender.com':'https://5023-1
 let UNREAL_SPEECH_API_KEY = process.env.REACT_APP_UNREAL_SPEECH_API_KEY
 let ELEVEN_LABS_API_KEY = process.env.REACT_APP_ELEVEN_LABS_API_KEY
 
-export const generateRoboMessage = (messages=[], fraudTopic="bank fraud") => {
+export const generateRoboMessage = (messages=[], fraudTopic="bank account") => {
   // console.log("isOnboarding", isOnboarding)
   return axios.post(`${apiEndpoint}/robocaller`, { messages, fraudTopic })
 }
 
-export const generateGuardianMessage = (messages=[], fraudTopic='bank fraud') => {
+export const generateGuardianMessage = (messages=[], fraudTopic='bank account') => {
   // console.log("isOnboarding", isOnboarding)
   return axios.post(`${apiEndpoint}/guardian`, { messages, fraudTopic })
 }
