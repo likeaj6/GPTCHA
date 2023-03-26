@@ -131,7 +131,15 @@ def guardian(messages=None):
             return ''
         out['content'] = re.sub(r'\((.*?)\)', replace, out['content']).strip()
         thoughts = ' '.join(thoughts)
-        GLOBAL_THOUGHTS.append(thoughts)
+        GLOBAL_THOUGHTS.append({
+            'timestamp': date.today().strftime('%Y-%m-%d'),
+            'text': thoughts,
+            'uid': "gptcha",
+            'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
+            'email': "",
+            'direction': "outgoing",
+            'displayName': "GPTCha",
+        })
     else:
         out = {'content': 'Hello! Who is this?'}
 
