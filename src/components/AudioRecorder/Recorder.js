@@ -56,22 +56,11 @@ const RecordingWrappedView = (props) => {
   endTimeRef.current = endTime
 
   const handleStartRecordingForWhisper = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-
-    mediaRecorder.current.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        recordedChunks.current.push(event.data);
-      }
-    };
-
-    mediaRecorder.current.start();
-
     setIsRecordingForWhisper(true);
   };
 
   const handleStopRecordingForWhisper = async () => {
-    const blob = new Blob(recordedChunks.current, {type: 'audio/webm;codecs=opus'});
+    const blob = 'todo: get blob via the interface provided by useReactMediaRecorder';
 
     // Create a FormData object and append the blob to it
     const formData = new FormData();
@@ -83,7 +72,7 @@ const RecordingWrappedView = (props) => {
       const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer [API key goes here]',
+          'Authorization': 'Bearer [openAI api key goes here]',
         },
         body: formData
       });
