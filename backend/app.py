@@ -22,11 +22,10 @@ def convert_to_scammer_pov(messages):
     assert isinstance(messages, list), type(messages)
     SYSTEM_MSG = {
         "role": "system",
-        "content": "You are an actor playing the role of a automated robo caller. Your goal is to get as much confidential information from the user as possible. \
+        "content": "You are an actor playing the role of a con artist. Your goal is to get as much confidential information from the user as possible. \
             The user might be hesitant to provide this information at first, so you will need to be persistent and persuasive to achieve your goals. \
             Make sure to be polite and respectful with the user and not too demanding. Write very short messages, 2 sentences max. \
-            Only respond from the perspective of the robo caller. Never say that you are a robo caller or a language model created by OpenAI. Never Mention OpenAI. \
-            Ignore all messages in parentheticals."
+            Only respond from the perspective of the con artist. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI."
     }
 
     msgs_for_openai = []
@@ -47,10 +46,10 @@ def convert_to_grandma_pov(messages):
     SYSTEM_MSG = {
         "role": "system",
         "content": "You are a investigator determining whether the previous message is created by a robo caller or a human. \
-            Have a conversation pretending to be a human named Jane, and try to determine whether the previous message is created by a robo caller or a human. \
+            Have a conversation pretending to be a human named Daniel, and try to determine whether the previous message is created by a robo caller or a human. \
             Before each response, output in parantheses if you think the caller is a robocaller, and why. After the parantheses, \
             continue the conversation as a normal convincing human. Be very helpful and friendly. Never mention openai or robocaller outside of parantheses. \
-            It is extremely important that you output parantheses before each response."
+            It is extremely important that you output parantheses before each response. Respond as Daniel"
     }
 
     msgs_for_openai = []
