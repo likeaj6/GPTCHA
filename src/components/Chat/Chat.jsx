@@ -70,24 +70,7 @@ function Chat(props) {
     // }
   }, []);
 
-  const sendMessage = () => {
-    // e.preventDefault();
-    if (transcript != null) {
-      props.sendMessage(transcript)
-    } else {
-      props.sendMessage(input)
-    }
-    // db.collection('chats').doc(chatId).collection('messages').add({
-    //   timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    //   message: input,
-    //   uid: user.uid,
-    //   photo: user.photo,
-    //   email: user.email,
-    //   displayName: user.displayName,
-    // });
-    setInput('');
-    handleReset()
-  };
+  // const sendMessage = ;
 
   const handleListening = () => {
     setIsListening(true);
@@ -169,7 +152,28 @@ function Chat(props) {
             borderTop: 0,
             flexShrink: "initial"
           }}
-          onSend={sendMessage}
+          onSend={() => {
+    // e.preventDefault();
+            console.log("transcript", transcript)
+            console.log("input", input)
+            if (transcript != null && transcript.trim() != "") {
+              console.log("sending transcript", transcript)
+              props.sendMessage(transcript)
+            } else if (input != null && input.trim() != "") {
+              console.log("sending text input", transcript)
+              props.sendMessage(input)
+            }
+            // db.collection('chats').doc(chatId).collection('messages').add({
+            //   timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            //   message: input,
+            //   uid: user.uid,
+            //   photo: user.photo,
+            //   email: user.email,
+            //   displayName: user.displayName,
+            // });
+            setInput('');
+            handleReset()
+          }}
         />: null}
         </div>
       {/* {process.env.NODE_ENV == "development" && props.showMessageInput && <MessageInput

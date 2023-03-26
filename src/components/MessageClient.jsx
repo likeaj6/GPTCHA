@@ -71,13 +71,13 @@ function MessageClient() {
       setMessageIsStreaming(false)
         let newMessages = response.data.messages
         let newThoughts = response.data.thoughts
-        let scoreText = response.data.scoreText
+        let scoreText = response.data.score
         if (newMessages.length > 0) {
           setMessages(newMessages)
           generateAudioSynthesis(newMessages)
           // messages.map((message) => addMessage(message))
         }
-        console.log("newThoughts", newThoughts)
+        console.log("scoreText", scoreText)
         if (newThoughts.length > 0) {
           setThoughts(newThoughts)
           // thoughts.map((message) => addThoughts(message))
@@ -142,7 +142,7 @@ function MessageClient() {
     }
   }
 
-  let NUM_INITIAL_MESSAGES = 3
+  let NUM_INITIAL_MESSAGES = 2
 
   useEffect(() => {
     console.log("playingAudio", playingAudio)
@@ -158,7 +158,7 @@ function MessageClient() {
     }
   }, [messages, playingAudio])
 
-  let [roboScore, setRoboScore] = useState()
+  let [roboScore, setRoboScore] = useState(50)
 
   // Math.min(Math.round(Math.random()*60 * messages.length) + 50, 100)
   return (
@@ -169,7 +169,7 @@ function MessageClient() {
         {<Button colorScheme={"teal"} type="primary" isLoading={messages.length == 0} loadingText="Starting call" disabled={false} onClick={() => {
           setMessages([])
           setAllAudio([])
-          generateInitialGuardianMessage([], fraudTopic)
+          // generateInitialGuardianMessage([], fraudTopic)
         }}>{allAudio?.length >= 0 ? 'Restart': 'Starting'} Call</Button>}
         <Text className="text-xs text-center width-full">
           OR
@@ -224,16 +224,18 @@ function MessageClient() {
                 messageIsStreaming={messageIsStreaming}
                 showMessageInput={true}
                 sendMessage={(text) => {
+                  console.log("sending message", text)
                   let testMessage = {
                     timestamp: new Date(),
-                    text: text,
                     uid: "robo-caller",
                     direction: "incoming",
                     photo: roboIcon,
                     email: "",
                     displayName: "Robot Caller",
+                    text: text,
                   }
                   addMessage(testMessage)
+                  console.log("sending live transcribed message: [...messages, testMessage]", [...messages, testMessage])
                   generateNextGuardianMessage([...messages, testMessage])
                 }}
               />
@@ -280,7 +282,7 @@ function MessageClient() {
               Generate next grandma message
             </Button>
           </div>
-          <Container className="border border-solid border-gray-300 rounded-lg p-4 my-8">
+          {roboScore && <Container className="border border-solid border-gray-300 rounded-lg p-4 my-8">
             <Text
               className='w-full uppercase font-bold font-lg text-left'
               style={{
@@ -296,7 +298,7 @@ function MessageClient() {
               </Text>
             </Center>
 
-          </Container>
+          </Container>}
         </RecordView>
       </div>
     </div>
