@@ -78,7 +78,7 @@ function Chat(props) {
   return (
     <ChatContainer>
       <MessageList style={{
-        height: "33vh", overflow: "scroll", padding: 16
+        height: "33vh", overflow: "scroll", padding: 16, borderRadius: 8
       }}>
         {/* <Message model={{
             message: "Hello world",
@@ -86,6 +86,9 @@ function Chat(props) {
             sender: "Joe"
           }} /> */}
         {messages.map((message) => {
+          if (!message || !message.text || !message.uid || !message.displayName) {
+            return null
+          }
           const { displayName, photo } = message
           return (<Message model={{
               ...message,

@@ -12,15 +12,16 @@ import { Button } from '@chakra-ui/react';
 
 let GPTLogo = "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png"
 let roboIcon = "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true";
-let exampleMessages = [{
-  timestamp: new Date(),
-  text: "Hello, I'm GPTCha. Who are you calling?",
-  uid: "gptcha",
-  photo: GPTLogo,
-  email: "",
-  direction: "outgoing",
-  displayName: "GPTCha",
-}]
+let exampleMessages = []
+// let exampleMessages = [{
+//   timestamp: new Date(),
+//   text: "Hello, I'm GPTCha. Who are you calling?",
+//   uid: "gptcha",
+//   photo: GPTLogo,
+//   email: "",
+//   direction: "outgoing",
+//   displayName: "GPTCha",
+// }]
 
 function MessageClient() {
   const [messages, setMessages] = useState(exampleMessages);
@@ -30,29 +31,52 @@ function MessageClient() {
     setMessages((messages) => [...messages, message]);
   }
 
-  const generateNextRoboMessage = async (messages) => {
+  const generateNextRoboMessage = async (currentMessages) => {
     setMessageIsStreaming(true)
-    chatApi.generateRoboMessage().then((response) => {
+    chatApi.generateRoboMessage(currentMessages).then((response) => {
       setMessageIsStreaming(false)
-      addMessage(response.data.messages)
+      let newMessages = response.data.messages
+      if (newMessages.length > 0) {
+        // messages.map((message) => addMessage(message))
+        setMessages(newMessages)
+      }
+      if (newMessages.length < 5) {
+        setTimeout(() => {
+          generateNextGuardianMessage(newMessages)
+        }, 1000)
+      }
     })
   }
 
-  const generateNextGuardianMessage = async (messages) => {
+  const generateNextGuardianMessage = async (currentMessages) => {
     setMessageIsStreaming(true)
-    chatApi.generateGuardianMessage().then((response) => {
+    chatApi.generateGuardianMessage(currentMessages).then((response) => {
       setMessageIsStreaming(false)
-      addMessage(response.data.messages)
+        let newMessages = response.data.messages
+        if (newMessages.length > 0) {
+          setMessages(newMessages)
+          // messages.map((message) => addMessage(message))
+        }
+        if (newMessages.length < 5) {
+          setTimeout(() => {
+            generateNextRoboMessage(newMessages)
+          }, 1000)
+        }
+
     })
   }
 
   useEffect(() => {
-    chatApi.generateRoboMessage().then((response) => {
+    // generate initial response upon picking up
+    chatApi.generateGuardianMessage().then((response) => {
       setMessageIsStreaming(false)
-      let messages = response.data.messages
-      if (messages.length > 0) {
-        messages.map((message) => addMessage(response.data.messages))
+      console.log("response", response)
+        let newMessages = response.data.messages
+      if (newMessages.length > 0) {
+        // messages.map((message) => addMessage(message))
+        setMessages(newMessages)
       }
+      generateNextRoboMessage(newMessages)
     })
   }, [])
 
@@ -73,30 +97,33 @@ function MessageClient() {
           }
           addMessage(testMessage);
           // setMessages([...messages, testMessage]);
-        }} onUpload={() => {}}/>
-        <MainContainer className='flex w-full my-8'>
-          <Chat 
-            messages={messages}
-            messageIsStreaming={messageIsStreaming}
-          />
-        </MainContainer>
-        <div className='align-center items-center'>
-          <Button 
-            loadingText='Loading'
-            isLoading={messageIsStreaming} disabled={messageIsStreaming} onClick={async () => {
-            generateNextRoboMessage(messages)
-          }}>
-            Generate next robo message
-          </Button>
-          <Button 
-            colorScheme={"teal"}
-            loadingText='Loading'
-            isLoading={messageIsStreaming} disabled={messageIsStreaming} onClick={async () => {
-            generateNextGuardianMessage(messages)
-          }}>
-            Generate next grandma message
-          </Button>
-        </div>
+        }} onUpload={() => {}}>
+
+          <MainContainer className='flex w-full my-8 rounded-lg'>
+            <Chat 
+              messages={messages}
+              messageIsStreaming={messageIsStreaming}
+            />
+          </MainContainer>
+          <div className='flex w-full align-center items-center'>
+            <Button 
+              loadingText='Loading'
+              className="mr-2"
+              isLoading={messageIsStreaming} disabled={messageIsStreaming} onClick={async () => {
+              generateNextRoboMessage(messages)
+            }}>
+              Generate next robo message
+            </Button>
+            <Button 
+              colorScheme={"teal"}
+              loadingText='Loading'
+              isLoading={messageIsStreaming} disabled={messageIsStreaming} onClick={async () => {
+              generateNextGuardianMessage(messages)
+            }}>
+              Generate next grandma message
+            </Button>
+          </div>
+        </RecordView>
       </div>
     </div>
   );

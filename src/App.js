@@ -1,9 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 // import { useSelector } from 'react-redux';
 import MessageClient from './components/MessageClient';
-import { ChakraProvider, Container, Box, Heading, Divider } from '@chakra-ui/react'
+import { ChakraProvider, Container, Box, Heading, Divider, Button, useDisclosure, Center } from '@chakra-ui/react'
 import AWS from 'aws-sdk';
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from '@chakra-ui/react'
+import Lottie from "lottie-react";
+import phoneCallAnimation from "./assets/animations/96660-phone-call.json";
 
 AWS.config.region = 'us-west-1'; // Region
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -15,6 +26,9 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 function App() {
   // const user = useSelector(selectUser);
   // const dispatch = useDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const [didAcceptCall, setDidAcceptCall] = useState(false);
 
   useEffect(() => {
     // auth.onAuthStateChanged((authUser) => {
@@ -33,18 +47,45 @@ function App() {
     //   }
     // });
   }, []);
+
+  const onAcceptCallModal = () => {
+    onClose();
+    setDidAcceptCall(true);
+  }
   return (<ChakraProvider>
-      <Box bgGradient="linear(to-r, #D6B4FC, #A9D3AB, #F8F8FF)">
+      <Box bgGradient="linear(to-r, #8A2BE2, #87CEFA)" style={{
+        height: '100vh', overflow: "scroll"
+      }}>
+      <Box bgGradient="radial(rgba(214, 180, 252, 0.7), rgba(169, 211, 171, 0.7), rgba(248, 248, 255, 0.7))" style={{
+        height: '100vh', overflow: "scroll"
+      }}>
       <div className="app p-8">
-      <Container className="p-8" bg="whiteAlpha.800" boxShadow="lg" rounded="md">
+      <Container className="p-8" bg="whiteAlpha.600" boxShadow="lg" rounded="md">
         <Heading className='text-center'>
           GPTCHA
         </Heading>
-        <Container className='containerWithShadow m-8 bg-white'>
+          <>
+          {!didAcceptCall && <Center className="my-8"><Button colorScheme={"teal"} onClick={onOpen}>Start demo</Button></Center>}
+          <Modal onClose={onAcceptCallModal} isOpen={isOpen} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Incoming call</ModalHeader>
+              <ModalBody>
+                <Lottie animationData={phoneCallAnimation} loop={true} />
+              </ModalBody>
+              <ModalFooter>
+                <Button colorScheme={"red"} onClick={onClose}>Decline</Button>
+                <Button colorScheme={"green"} onClick={onAcceptCallModal}>Accept</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+          </>
+        {didAcceptCall && <Container className='containerWithShadow m-8 bg-white'>
           {<MessageClient />}
-        </Container>
+        </Container>}
       </Container>
       </div>
+      </Box>
       </Box>
   </ChakraProvider>);
 }

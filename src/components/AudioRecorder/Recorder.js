@@ -15,7 +15,7 @@ const mainColor = "#4353FF"
 let GPTLogo = "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png"
 let roboIcon = "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true";
 
-const RecordView = (props) => {
+const RecordingWrappedView = (props) => {
   const { onRecordStarted } = props
   const {
     status,
@@ -167,20 +167,20 @@ const RecordView = (props) => {
   }, [isRecording])
   return (
     <div className="p-4">
-      <h4>{isRecording ? 'Stop': 'Start'}</h4>
+      <h4>{'Live call'}</h4>
       {/* <Button onClick={() => setIsExerciseModalOpen(true)} style={{ width: '100%' }}><PlusOutlined />exercise</Button> */}
 
       {!isRecording && <Button colorScheme={"teal"} type="primary" loading={isRecording} disabled={isRecording} onClick={() => {
         deleteRecording()
         startRecording() 
         setStart(moment())
-      }}>{mediaBlobUrl ? 'Restart': 'Start'} Recording</Button>}
+      }}>{mediaBlobUrl ? 'Restart': 'Start'} Call</Button>}
       {isRecording && <Button disabled={!isRecording || mediaBlobUrl} onClick={() => {
         stopRecording()
         setEnd(moment())
       }}>Stop Recording</Button>}
       {<div style={{
-        position: "relative", marginTop: 8, height: mediaBlobUrl ? 240: 160 }}>
+        position: "relative", marginTop: 8, height: 160 }}>
         <div style={{ display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
           <p style={{ color: "#aaa" }}>
             {`${isRecording ? 'Live': 'Recording'} `} 
@@ -226,19 +226,20 @@ const RecordView = (props) => {
           audioId={"audioRecording"}
         /> */}
         {/* {mediaBlobUrl && wavesurf && `${wavesurf.getCurrentTime()}/${wavesurf.getDuration()}`} */}
-        <div id="waveform" style={{ height: 120, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
-        {<ReactPlayer
-          id="audioRecording"
-          url={mediaBlobUrl}
-          width="90%"
-          height="50px"
-          playing={false}
-          controls={true}
-          onStart={() => startPlaying()}
-          onPause={() => stopPlaying()}
-          config={{ file: { forceAudio: true } }}
-        />}
       </div>}
+      {props.children}
+      <div id="waveform" style={{ height: 120, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
+      {<ReactPlayer
+        id="audioRecording"
+        url={mediaBlobUrl}
+        width="90%"
+        height="50px"
+        playing={false}
+        controls={true}
+        onStart={() => startPlaying()}
+        onPause={() => stopPlaying()}
+        config={{ file: { forceAudio: true } }}
+      />}
       {/* <div className="w-full">
         <Button disabled={!mediaBlobUrl} style={{ color: "#f87077" }} onClick={() => deleteRecording()}><XCircleIcon /> Delete</Button>
         <Button disabled={!mediaBlobUrl || isUploading} style={{ color: "#66cc91" }} loading={isUploading} onClick={() => {
@@ -249,4 +250,4 @@ const RecordView = (props) => {
   );
 };
 
-export default RecordView;
+export default RecordingWrappedView;
