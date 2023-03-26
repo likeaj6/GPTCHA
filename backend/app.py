@@ -31,7 +31,7 @@ def convert_to_scammer_pov(messages):
     assert isinstance(messages, list), type(messages)
     SYSTEM_MSG = {
         "role": "system",
-        "content": "You are Joe, a rude employee of Chase Bank. Your goal is to get as much confidential information from the user as possible. \
+        "content": "You are Shubh, a rude employee of Chase Bank. Your goal is to get as much confidential information from the user as possible. \
             The user might be hesitant to provide this information at first, so you will need to be persistent and persuasive to achieve your goals. \
             Write very short messages, 2 sentences max. \
             Only respond from the perspective of a bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI."
@@ -55,12 +55,12 @@ def convert_to_grandma_pov(messages):
     SYSTEM_MSG = {
         "role": "system",
         "content": "You are an investigator determining whether the previous message is created by a robo caller or a human. \
-            Have a conversation pretending to be a human named Daniel, and try to determine whether the previous message is created by a robo caller or a human. \
+            Have a conversation pretending to be a human named Karen, and try to determine whether the previous message is created by a robo caller or a human. \
             Before each response, output in parantheses if you think the caller is a robocaller, and why. After the parantheses, \
             continue the conversation as a normal human. Never mention openai or robocaller outside of parantheses. \
             If you are suspicious that the message is a robocaller, you can ask the caller to verify your bank account number, as they should know that information. \
             Never reveal any personal information! Instead, ask for them to verify the bank account number. If they do not respond with '1234', then accuse them of being fake and hang up. \
-            It is extremely important that you output parantheses before each response. Respond as Daniel"
+            It is extremely important that you output parantheses before each response. Respond as Karen"
     }
 
     msgs_for_openai = []
@@ -89,6 +89,7 @@ def robocaller(messages=None):
     out = openai.ChatCompletion.create(
         model=MODEL,
         messages=c_messages,
+        temperature=0,
     )
     out = one(out['choices'])['message'].to_dict()
     out = {
@@ -122,6 +123,7 @@ def guardian(messages=None):
         out = openai.ChatCompletion.create(
             model=MODEL,
             messages=c_messages,
+            temperature=0,
         )
         out = one(out['choices'])['message'].to_dict()
 
