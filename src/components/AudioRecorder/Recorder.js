@@ -32,6 +32,8 @@ const RecordingWrappedView = (props) => {
   // console.log("currentAudioStreamUrl", props.currentAudioStreamUrl, audioUrl)
 
   const [isRecordingForWhisper, setIsRecordingForWhisper] = useState(false);
+  const mediaRecorder = useRef(null);
+  const recordedChunks = useRef([]);
 
   const [wavesurf, setWavesurf] = useState(null)
   const [startTime, setStart] = useState(moment())
@@ -54,10 +56,48 @@ const RecordingWrappedView = (props) => {
   endTimeRef.current = endTime
 
   const handleStartRecordingForWhisper = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+    mediaRecorder.current.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        recordedChunks.current.push(event.data);
+      }
+    };
+
+    mediaRecorder.current.start();
+
     setIsRecordingForWhisper(true);
   };
 
-  const handleStopRecordingForWhisper = () => {
+  const handleStopRecordingForWhisper = async () => {
+    const blob = new Blob(recordedChunks.current, {type: 'audio/webm;codecs=opus'});
+
+    // Create a FormData object and append the blob to it
+    const formData = new FormData();
+    formData.append('file', blob, filename);
+    formData.append('model', 'whisper-1');
+
+    // Send the POST request with the FormData object
+    try {
+      const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer [API key goes here]',
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+      } else {
+        console.error(`Error: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
     setIsRecordingForWhisper(false);
   };
 
