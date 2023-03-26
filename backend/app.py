@@ -215,7 +215,7 @@ def guardian(messages=None, fraudTopic=None):
         out['content'] = re.sub(r'\((.*?)\)', replace, out['content']).strip()
 
         # Check if Karen is mentioned
-        karen_regex = r"\b[Kk]aren\b"
+        karen_regex = r"\b[Kk]aren:\b"
         if re.search(karen_regex, out['content']):
             out['content'] = re.sub(karen_regex, "", out['content']).strip()
 
