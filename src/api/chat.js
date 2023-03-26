@@ -3,8 +3,8 @@ import axios from 'axios'
 let isProd = true || process.env.NODE_ENV === "production"
 let apiEndpoint = isProd ? 'https://gptcha-backend.onrender.com':'https://5023-12-94-170-82.ngrok.io'
 // let apiEndpoint = 'https://gptcha-backend.onrender.com'
-let UNREAL_SPEECH_API_KEY = process.env.UNREAL_SPEECH_API_KEY ?? "S4qWKbu2cjCt7NgOjPqCCuP4KNLEoWPFWFKrMGBKR_EigqabVkKPUw"
-let ELEVEN_LABS_API_KEY = process.env.ELEVEN_LABS_API_KEY ?? "d5cb565f14b05ee73dca28d63ab2ddc3"
+let UNREAL_SPEECH_API_KEY = process.env.UNREAL_SPEECH_API_KEY
+let ELEVEN_LABS_API_KEY = process.env.ELEVEN_LABS_API_KEY
 
 export const generateRoboMessage = (messages=[]) => {
   // console.log("isOnboarding", isOnboarding)
