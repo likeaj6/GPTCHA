@@ -168,7 +168,7 @@ function MessageClient() {
         <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Use pre-existing robo call'}</Text>
         <Select placeholder='Select option' defaultValue={'bank account'} value={fraudTopic} onChange={(e) => {
           let option = e.target.value
-          fraudTopic(option)
+          setFraudTopic(option)
               // if (option == 'bank account') {
               //   setAllAudio(bankFraudAudio)
               // } else if (option == 'car insurance') {
