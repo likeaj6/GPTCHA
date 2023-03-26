@@ -9,7 +9,6 @@ import fire
 
 from dotenv import load_dotenv
 from more_itertools import one
-from dataclasses import dataclass
 
 
 MODEL = "gpt-3.5-turbo"
