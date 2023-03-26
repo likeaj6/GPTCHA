@@ -45,7 +45,8 @@ export const generateSpeechFromText = (text, voiceId='TxGEqnHWrfWFTfGW9XjX') => 
       "similarity_boost": 0.75
     }
   }
-  let devUrl = process.env.NODE_ENV === 'development' ? 'https://cors-anywhere.herokuapp.com/' : ''
+  let devUrl = process.env.NODE_ENV === 'development' ? '' : ''
+  // let devUrl = process.env.NODE_ENV === 'development' ? 'https://cors-anywhere.herokuapp.com/' : ''
   // console.log("ELEVEN_LABS_API_KEY", ELEVEN_LABS_API_KEY, process.env)
   return axios.post(
   `${devUrl}https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
