@@ -52,7 +52,7 @@ function MessageClient() {
 
   const generateNextRoboMessage = async (currentMessages) => {
     setMessageIsStreaming(true)
-    chatApi.generateRoboMessage(currentMessages).then((response) => {
+    chatApi.generateRoboMessage(currentMessages, fraudTopic).then((response) => {
       setMessageIsStreaming(false)
       let newMessages = response.data.messages
       if (newMessages.length > 0) {
@@ -65,7 +65,7 @@ function MessageClient() {
 
   const generateNextGuardianMessage = async (currentMessages) => {
     setMessageIsStreaming(true)
-    chatApi.generateGuardianMessage(currentMessages).then((response) => {
+    chatApi.generateGuardianMessage(currentMessages, fraudTopic).then((response) => {
       setMessageIsStreaming(false)
         let newMessages = response.data.messages
         let newThoughts = response.data.thoughts
@@ -168,7 +168,7 @@ function MessageClient() {
         <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Use pre-existing robo call'}</Text>
         <Select placeholder='Select option' defaultValue={'bank account'} value={fraudTopic} onChange={(e) => {
           let option = e.target.value
-          fraudTopic(option)
+          setFraudTopic(option)
               // if (option == 'bank account') {
               //   setAllAudio(bankFraudAudio)
               // } else if (option == 'car insurance') {
