@@ -5,6 +5,8 @@ import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from '@chatscope/chat-ui-kit-react';
   import RecordView from './AudioRecorder/Recorder';
 import { LoremIpsum } from "lorem-ipsum";
+import chatApi from '../api/chat'
+import { Button } from '@chakra-ui/react';
 
 // import './Message.css';
 
@@ -22,27 +24,41 @@ let exampleMessages = [{
 
 function MessageClient() {
   const [messages, setMessages] = useState(exampleMessages);
+  const [messageIsStreaming, setMessageIsStreaming] = useState(false);
 
   const addMessage = (message) => {
     setMessages((messages) => [...messages, message]);
   }
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     const lorem = new LoremIpsum();
-  //     addMessage({
-  //       timestamp: new Date(),
-  //       text: lorem.generateSentences(1),
-  //       uid: "gptcha",
-  //       photo: "",
-  //       email: "",
-  //       displayName: "",
-  //     });
-  //   }, 2000);
-  // }, [])
+  const generateNextRoboMessage = async (messages) => {
+    setMessageIsStreaming(true)
+    chatApi.generateRoboMessage().then((response) => {
+      setMessageIsStreaming(false)
+      addMessage(response.data.messages)
+    })
+  }
+
+  const generateNextGuardianMessage = async (messages) => {
+    setMessageIsStreaming(true)
+    chatApi.generateGuardianMessage().then((response) => {
+      setMessageIsStreaming(false)
+      addMessage(response.data.messages)
+    })
+  }
+
+  useEffect(() => {
+    chatApi.generateRoboMessage().then((response) => {
+      setMessageIsStreaming(false)
+      let messages = response.data.messages
+      if (messages.length > 0) {
+        messages.map((message) => addMessage(response.data.messages))
+      }
+    })
+  }, [])
+
   return (
     <div className="Message">
-      <div style={{ position:"relative", height: "100%" }}>
+      <div style={{ position:"relative" }}>
         <RecordView onRecordStarted={() => {
           const lorem = new LoremIpsum();
           let isGPTMessage = Math.random() < 0.5
@@ -58,9 +74,29 @@ function MessageClient() {
           addMessage(testMessage);
           // setMessages([...messages, testMessage]);
         }} onUpload={() => {}}/>
-        <MainContainer>
-          <Chat messages={messages}/>
+        <MainContainer className='flex w-full my-8'>
+          <Chat 
+            messages={messages}
+            messageIsStreaming={messageIsStreaming}
+          />
         </MainContainer>
+        <div className='align-center items-center'>
+          <Button 
+            loadingText='Loading'
+            isLoading={messageIsStreaming} disabled={messageIsStreaming} onClick={async () => {
+            generateNextRoboMessage(messages)
+          }}>
+            Generate next robo message
+          </Button>
+          <Button 
+            colorScheme={"teal"}
+            loadingText='Loading'
+            isLoading={messageIsStreaming} disabled={messageIsStreaming} onClick={async () => {
+            generateNextGuardianMessage(messages)
+          }}>
+            Generate next grandma message
+          </Button>
+        </div>
       </div>
     </div>
   );

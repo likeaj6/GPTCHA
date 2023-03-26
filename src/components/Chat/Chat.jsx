@@ -19,6 +19,26 @@ let exampleMessages = [{
   displayName: "",
 }]
 
+// function Highlight({ children, highlightIndex, ...props }) {
+//   let backgroundColorForText = children == "Andrew:" ? hexToRgbA(Colors.shadowColor, 0.2) : hexToRgbA(Colors.positiveGreenColor, 0.2);
+//   // console.log("highlight children", children, props)
+//   return (
+//     <mark style={{
+//       backgroundColor: backgroundColorForText,
+//       fontSize: 14,
+//       fontFamily: "Inter-SemiBold",
+//       color: Colors.darkBlackColor,
+//     }}>
+//       <strong className="mark">
+//         {children}
+//       </strong>
+//     </mark>
+//   )
+// };
+
+
+
+
 function Chat(props) {
   const { messages } = props
   const [input, setInput] = useState('');
@@ -57,7 +77,9 @@ function Chat(props) {
   console.log("messages", messages)
   return (
     <ChatContainer>
-      <MessageList>
+      <MessageList style={{
+        height: "33vh", overflow: "scroll", padding: 16
+      }}>
         {/* <Message model={{
             message: "Hello world",
             sentTime: "just now",

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import './App.css';
 // import { useSelector } from 'react-redux';
 import MessageClient from './components/MessageClient';
-import { ChakraProvider, Container, Heading, Divider } from '@chakra-ui/react'
+import { ChakraProvider, Container, Box, Heading, Divider } from '@chakra-ui/react'
 import AWS from 'aws-sdk';
 
 AWS.config.region = 'us-west-1'; // Region
@@ -34,17 +34,18 @@ function App() {
     // });
   }, []);
   return (<ChakraProvider>
-      <div className="app">
-      <Container>
-        <Heading>
+      <Box bgGradient="linear(to-r, #D6B4FC, #A9D3AB, #F8F8FF)">
+      <div className="app p-8">
+      <Container className="p-8" bg="whiteAlpha.800" boxShadow="lg" rounded="md">
+        <Heading className='text-center'>
           GPTCHA
         </Heading>
-        <Divider/>
-        <Container className='containerWithShadow'>
+        <Container className='containerWithShadow m-8 bg-white'>
           {<MessageClient />}
         </Container>
       </Container>
       </div>
+      </Box>
   </ChakraProvider>);
 }
 

@@ -1,6 +1,6 @@
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid'
 
-import { Button } from '@chakra-ui/react';
+import { Button, } from '@chakra-ui/react';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
@@ -9,8 +9,11 @@ import AudioContext from '../Audio/AudioContext';
 import Visualizer from '../Audio/AudioVisualizer';
 import { useReactMediaRecorder } from "../Audio/MediaRecorder.ts";
 import AudioSpectrum from "react-audio-spectrum";
+import { Avatar } from '@chatscope/chat-ui-kit-react';
 
 const mainColor = "#4353FF"
+let GPTLogo = "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png"
+let roboIcon = "https://github.com/likeaj6/GPTCHA/blob/main/src/assets/robot.jpeg?raw=true";
 
 const RecordView = (props) => {
   const { onRecordStarted } = props
@@ -33,6 +36,7 @@ const RecordView = (props) => {
   const [blob, setBlob] = useState()
 
   const visualizerRef = useRef()
+  const visualizer2Ref = useRef()
   const endTimeRef = useRef()
   const startTimeRef = useRef()
   endTimeRef.current = endTime
@@ -42,7 +46,14 @@ const RecordView = (props) => {
     setTimeout(() => {
       if (visualizerRef.current) {
         let canvas = visualizerRef.current
-        Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 100, "#000", mainColor)
+        Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 60, "#000", mainColor)
+        setInterval(updateTime, 1000)
+      }
+    }, 1000)
+    setTimeout(() => {
+      if (visualizer2Ref.current) {
+        let canvas = visualizer2Ref.current
+        Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 60, "#000", mainColor)
         setInterval(updateTime, 1000)
       }
     }, 1000)
@@ -55,7 +66,7 @@ const RecordView = (props) => {
         barWidth: 3,
         barRadius: 3,
         cursorWidth: 2,
-        height: 120,
+        height: 60,
         plugins: [
           // CursorPlugin.create({
           //   showTime: true,
@@ -70,7 +81,6 @@ const RecordView = (props) => {
         ],
         barGap: 3
       });
-      console.log("wavesurf", wavesurf)
       setWavesurf(wavesurf)
     }
   }, [])
@@ -156,21 +166,21 @@ const RecordView = (props) => {
     }
   }, [isRecording])
   return (
-    <div>
-      <h4>Recording...</h4>
+    <div className="p-4">
+      <h4>{isRecording ? 'Stop': 'Start'}</h4>
       {/* <Button onClick={() => setIsExerciseModalOpen(true)} style={{ width: '100%' }}><PlusOutlined />exercise</Button> */}
 
-      <Button type="primary" loading={isRecording} disabled={isRecording} onClick={() => {
+      {!isRecording && <Button colorScheme={"teal"} type="primary" loading={isRecording} disabled={isRecording} onClick={() => {
         deleteRecording()
         startRecording() 
         setStart(moment())
-      }}>{mediaBlobUrl ? 'Restart': 'Start'} Recording</Button>
-      {<Button disabled={!isRecording || mediaBlobUrl} onClick={() => {
+      }}>{mediaBlobUrl ? 'Restart': 'Start'} Recording</Button>}
+      {isRecording && <Button disabled={!isRecording || mediaBlobUrl} onClick={() => {
         stopRecording()
         setEnd(moment())
       }}>Stop Recording</Button>}
       {<div style={{
-        position: "relative", marginTop: 8 }}>
+        position: "relative", marginTop: 8, height: mediaBlobUrl ? 240: 160 }}>
         <div style={{ display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
           <p style={{ color: "#aaa" }}>
             {`${isRecording ? 'Live': 'Recording'} `} 
@@ -181,15 +191,34 @@ const RecordView = (props) => {
             {duration != null && duration}
           </p>
         </div>
-        {<canvas
-          id="livepreview"
-          ref={visualizerRef}
-          style={{
-            visibility: !mediaBlobUrl ? 'visible':'hidden',
-          }}
-          height={!mediaBlobUrl ? 100: 1}
-          width={300}
-        />}
+        <div className="flex flex-row m-2 w-full">
+          <Avatar src={roboIcon} name={"Robo caller"} />
+          {<canvas
+            id="livepreview"
+            ref={visualizerRef}
+            style={{
+              // visibility: !mediaBlobUrl ? 'visible':'hidden',
+            }}
+            height={!mediaBlobUrl ? 60: 1}
+            width={300}
+            className='ml-2'
+          />}
+        </div>
+        <div className="flex flex-row m-2 w-full justify-end">
+          {<canvas
+            id="livepreview-2"
+            ref={visualizer2Ref}
+            style={{
+              // visibility: !mediaBlobUrl ? 'visible':'hidden',
+              float: "right",
+            }}
+            height={!mediaBlobUrl ? 60: 1}
+            width={300}
+            className='mr-2'
+          />}
+          <Avatar src={GPTLogo} name={"GPTCHA"} />
+        </div>
+
         {/* <AudioSpectrum
           id="audio-canvas"
           height={200}
@@ -197,7 +226,7 @@ const RecordView = (props) => {
           audioId={"audioRecording"}
         /> */}
         {/* {mediaBlobUrl && wavesurf && `${wavesurf.getCurrentTime()}/${wavesurf.getDuration()}`} */}
-        <div id="waveform" style={{ height: mediaBlobUrl ? 60: 1, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1, margin: 16 }}></div>
+        <div id="waveform" style={{ height: 120, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
         {<ReactPlayer
           id="audioRecording"
           url={mediaBlobUrl}
@@ -210,10 +239,12 @@ const RecordView = (props) => {
           config={{ file: { forceAudio: true } }}
         />}
       </div>}
-      <Button disabled={!mediaBlobUrl} style={{ color: "#f87077" }} onClick={() => deleteRecording()}><XCircleIcon /> Delete</Button>
-      <Button disabled={!mediaBlobUrl || isUploading} style={{ color: "#66cc91" }} loading={isUploading} onClick={() => {
-        uploadRecording()
-      }}><CheckCircleIcon /> Upload recording</Button>
+      {/* <div className="w-full">
+        <Button disabled={!mediaBlobUrl} style={{ color: "#f87077" }} onClick={() => deleteRecording()}><XCircleIcon /> Delete</Button>
+        <Button disabled={!mediaBlobUrl || isUploading} style={{ color: "#66cc91" }} loading={isUploading} onClick={() => {
+          uploadRecording()
+        }}><CheckCircleIcon /> Upload recording</Button>
+      </div> */}
     </div>
   );
 };

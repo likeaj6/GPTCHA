@@ -17,10 +17,12 @@ const AudioContext = {
 
   decodeAudioData() {
     audioCtx.decodeAudioData().then(function (decodedData) {
+      console.log("decodedData", decodedData)
       // use the decoded data here
     });
   }
 
 }
+
 
 export default AudioContext;

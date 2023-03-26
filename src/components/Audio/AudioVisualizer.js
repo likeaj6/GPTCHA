@@ -60,9 +60,11 @@ const Visualizer = {
     const dataArray = new Uint8Array(bufferLength);
 
     canvasCtx.clearRect(0, 0, width, height);
+    // console.log("visualizing frequency bars")
 
     function draw() {
       drawVisual = requestAnimationFrame(draw);
+      // console.log("drawing visual", width. height, dataArray)
 
       analyser = AudioContext.getAnalyser();
       analyser.getByteFrequencyData(dataArray);
