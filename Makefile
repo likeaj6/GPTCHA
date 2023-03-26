@@ -1,4 +1,4 @@
 .PHONY: all
 
 run-backend:
-	python backend/main.py
+	python backend/main.py run
