@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-let apiEndpoint = 'https://5023-12-94-170-82.ngrok.io'
+let apiEndpoint = 'https://gptcha-backend.onrender.com'
 
 export const generateRoboMessage = (messages=[]) => {
   // console.log("isOnboarding", isOnboarding)
