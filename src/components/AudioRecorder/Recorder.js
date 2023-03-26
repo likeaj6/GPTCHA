@@ -242,7 +242,7 @@ const RecordingWrappedView = (props) => {
       </div>}
       </Container>
       {props.children}
-      {mediaBlobUrl && <Container className="border border-solid border-gray-100 rounded-lg p-4">
+      {<Container className={mediaBlobUrl ? "border border-solid border-gray-100 rounded-lg p-4": ""}>
         <div id="waveform" style={{ height: 120, visibility: mediaBlobUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
         {<ReactPlayer
           id="audioRecording"
