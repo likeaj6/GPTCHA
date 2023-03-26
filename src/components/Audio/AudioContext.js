@@ -1,22 +1,27 @@
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let analyser = audioCtx.createAnalyser();
+let audioCtx;
+let analyser;
 
 const AudioContext = {
-
   getAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
     return audioCtx;
   },
 
   getAnalyser() {
+    if (!analyser) {
+      analyser = this.getAudioContext().createAnalyser();
+    }
     return analyser;
   },
 
   resetAnalyser() {
-    analyser = audioCtx.createAnalyser();
+    analyser = this.getAudioContext().createAnalyser();
   },
 
   decodeAudioData() {
-    audioCtx.decodeAudioData().then(function (decodedData) {
+    this.getAudioContext().decodeAudioData().then(function (decodedData) {
       // use the decoded data here
     });
   }

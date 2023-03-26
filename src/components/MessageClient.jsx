@@ -26,6 +26,11 @@ let exampleMessages = []
 function MessageClient() {
   const [messages, setMessages] = useState(exampleMessages);
   const [messageIsStreaming, setMessageIsStreaming] = useState(false);
+  const [currentAudioStreamUrl, setCurrentAudioStreamUrl] = useState(null);
+  const [currentAudioUser, setCurrentAudioUser] = useState("gptcha");
+  const [audioQueue, setAudioQueue] = useState([]);
+  const [allAudio, setAllAudio] = useState([]);
+  const [playingAudio, setPlayingAudio] = useState(true);
 
   const addMessage = (message) => {
     setMessages((messages) => [...messages, message]);
@@ -39,6 +44,7 @@ function MessageClient() {
       if (newMessages.length > 0) {
         // messages.map((message) => addMessage(message))
         setMessages(newMessages)
+        generateAudioSynthesis(newMessages)
       }
     })
   }
@@ -50,9 +56,33 @@ function MessageClient() {
         let newMessages = response.data.messages
         if (newMessages.length > 0) {
           setMessages(newMessages)
+          generateAudioSynthesis(newMessages)
           // messages.map((message) => addMessage(message))
         }
     })
+  }
+
+  const generateAudioSynthesis = async (currentMessages) => {
+    let mostRecentMessage = currentMessages.slice(-1).pop()
+    let isGPTMessage = mostRecentMessage.uid == "gptcha"
+    let modelName = isGPTMessage ? '21m00Tcm4TlvDq8ikWAM': 'TxGEqnHWrfWFTfGW9XjX'
+    if (mostRecentMessage) {
+      chatApi.generateSpeechFromText(mostRecentMessage.text, modelName).then((response) => {
+        console.log("response", response)
+        let audioBlob = response.data
+        const blob = new Blob([audioBlob], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(blob);
+        console.log("audioUrl", audioUrl)
+        if (audioQueue.length > 0) {
+          setAudioQueue((audioQueue) => [...audioQueue, audioUrl])
+        } else {
+          setCurrentAudioStreamUrl(audioUrl)
+          setCurrentAudioUser(mostRecentMessage.uid)
+        }
+        setAllAudio((allAudio) => [...allAudio, audioUrl])
+        setPlayingAudio(true)
+      })
+    }
   }
 
   useEffect(() => {
@@ -64,28 +94,46 @@ function MessageClient() {
       if (newMessages.length > 0) {
         // messages.map((message) => addMessage(message))
         setMessages(newMessages)
+        generateAudioSynthesis(newMessages)
       }
     })
   }, [])
 
-  let NUM_INITIAL_MESSAGES = 5
+  const onStopPlaying = () => {
+    if (audioQueue.length > 0) {
+      let newAudioQueue = audioQueue.slice(1)
+      setAudioQueue(newAudioQueue)
+      setCurrentAudioStreamUrl(newAudioQueue[0])
+    } else {
+      setPlayingAudio(false)
+      // setTimeout(() => {
+      // }, 200)
+    }
+  }
+
+  let NUM_INITIAL_MESSAGES = 2
 
   useEffect(() => {
-    console.log()
-    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "gptcha") {
+    console.log("playingAudio", playingAudio)
+    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "gptcha" && !playingAudio) {
       generateNextRoboMessage(messages)
     }
-    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "robo-caller") {
+    if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "robo-caller" && !playingAudio) {
       generateNextGuardianMessage(messages)
     }
-  }, [messages])
+  }, [messages, playingAudio])
 
   let roboScore = Math.min(Math.round(Math.random()*100) + 50, 100)
 
   return (
     <div className="Message">
       <div style={{ position:"relative" }}>
-        <RecordView onRecordStarted={() => {
+        <RecordView
+          currentAudioUser={currentAudioUser}
+          allAudio={allAudio}
+          currentAudioStreamUrl={currentAudioStreamUrl}
+          onStopPlaying={onStopPlaying}
+          onRecordStarted={() => {
           const lorem = new LoremIpsum();
           let isGPTMessage = Math.random() < 0.5
           let testMessage = {
@@ -97,7 +145,7 @@ function MessageClient() {
             email: "",
             displayName: isGPTMessage ? "GPTCha": "Robot Caller",
           }
-          addMessage(testMessage);
+          // addMessage(testMessage);
           // setMessages([...messages, testMessage]);
         }} onUpload={() => {}}>
 
