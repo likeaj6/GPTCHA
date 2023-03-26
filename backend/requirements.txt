@@ -3,3 +3,4 @@ flask_cors
 openai
 fire
 gunicorn==19.9.0
+python-dotenv
