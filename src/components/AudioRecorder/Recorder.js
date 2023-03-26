@@ -1,4 +1,4 @@
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid'
+import { CheckCircleIcon, XCircleIcon, HandThumbUpIcon, HandThumbDownIcon } from '@heroicons/react/24/solid'
 
 import { Container, Button, Select, Text } from '@chakra-ui/react';
 import moment from 'moment';
@@ -32,12 +32,12 @@ const RecordingWrappedView = (props) => {
   console.log("currentAudioStreamUrl", props.currentAudioStreamUrl, audioUrl)
 
   const [wavesurf, setWavesurf] = useState(null)
-  const [startTime, setStart] = useState()
+  const [startTime, setStart] = useState(moment())
+  const [endTime, setEnd] = useState(moment())
   const [duration, setDuration] = useState()
   const [isUploading, setIsUploading] = useState(false)
 
   const [filename, setFilename] = useState(`test.webm`)
-  const [endTime, setEnd] = useState()
   const [blob, setBlob] = useState()
 
   const lottie1Ref = useRef();
@@ -51,18 +51,18 @@ const RecordingWrappedView = (props) => {
   startTimeRef.current = startTime
   endTimeRef.current = endTime
   useEffect(() => {
+    let handle = setInterval(updateTime, 1000)
     setTimeout(() => {
       if (visualizerRef.current) {
         let canvas = visualizerRef.current
         Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 60, "#000", mainColor)
-        setInterval(updateTime, 1000)
       }
     }, 1000)
     setTimeout(() => {
       if (visualizer2Ref.current) {
         let canvas = visualizer2Ref.current
         Visualizer.visualizeFrequencyBars(canvas.getContext('2d'), canvas, 300, 60, "#000", mainColor)
-        setInterval(updateTime, 1000)
+        // setInterval(updateTime, 1000)
       }
     }, 1000)
     if (!wavesurf) {
@@ -91,6 +91,9 @@ const RecordingWrappedView = (props) => {
       });
       setWavesurf(wavesurf)
     }
+    return () => {
+      clearInterval(handle)
+    }
   }, [])
 
   useEffect(() => {
@@ -109,11 +112,16 @@ const RecordingWrappedView = (props) => {
     if (allAudio?.length % 2 == 1) {
       console.log("pausing robo audiowave")
       lottie1Ref.current?.start?.();
-      // lottie2Ref.current?.stop?.();
+      if (!playingAudio) {
+        lottie1Ref.current?.stop?.();
+      }
     }
     if (allAudio?.length % 2 == 0) {
       console.log("starting gptcha audiowave")
       lottie2Ref.current?.start?.();
+      if (!playingAudio) {
+        lottie2Ref.current?.stop?.();
+      }
       // lottie1Ref.current?.stop?.();
     }
 
@@ -125,17 +133,28 @@ const RecordingWrappedView = (props) => {
     audio.play();
   }
   const updateTime = () => {
-    if (!endTimeRef.current && startTimeRef.current) {
+    console.log("updating time", endTimeRef.current != null && startTimeRef.current != null)
+    if (endTimeRef.current != null && startTimeRef.current != null) {
       // var date = new Date()
       let diff = moment().diff(startTimeRef.current, 'seconds')
       // date.setSeconds(moment().diff(startTime, 'seconds')); // specify value for SECONDS here
       let duration = `${Math.floor(diff / 60)}:${diff%60 < 10 ? `0${diff%60}` : diff%60}`
+      console.log("duration", duration)
 
       setDuration(duration)
     }
   }
 
   function deleteRecording() {
+    clearBlobUrl()
+    AudioContext.resetAnalyser()
+    wavesurf.empty()
+    setStart(null)
+    setEnd(null)
+    setDuration(null)
+  }
+
+  function restartTimer() {
     clearBlobUrl()
     AudioContext.resetAnalyser()
     wavesurf.empty()
@@ -196,6 +215,13 @@ const RecordingWrappedView = (props) => {
     }
   }, [isRecording])
 
+  useEffect(() => {
+    let handle;
+    if (allAudio && allAudio.length == 0 && !playingAudio) {
+      restartTimer()
+    }
+  }, [allAudio])
+
   return (
     <div className="p-4">
       {/* {!isRecording && <Container className="border border-solid border-gray-300 rounded-lg p-4 mb-8">
@@ -222,13 +248,16 @@ const RecordingWrappedView = (props) => {
       }}>Stop Recording</Button>}
       {<div style={{
         position: "relative", marginTop: 8, height: 160 }}>
-        <div style={{ display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
+        <div style={{ position: "relative", display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
+          <Text className="uppercase text-red-400 font-bold font-base justify-end flex-end" style={{ position: "absolute", bottom: 16, right: 16 }}>
+            {duration != null && duration}
+          </Text>
           <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>
             {`${isRecording ? 'Live': 'Recording'} `} 
             {` Preview `}
             <Text style={{ textAlign: "left", color: "#00f", fontWeight: "bold", fontSize: 12 }}>
-              {status ? ` ${status?.toUpperCase()} `: playingAudio ? "SPEAKING": "IDLE"}
-              {duration != null && duration}
+              {playingAudio ? "SPEAKING": "IDLE... CLICK BELOW TO GENERATE MORE."}
+              {/* {status ? status == "idle" ? "IDLE. TO GENERATE MORE CLICK BELOW...":` ${status?.toUpperCase()} `: playingAudio ? "SPEAKING": "IDLE... CLICK BELOW TO GENERATE MORE."} */}
             </Text>
           </Text>
         </div>
@@ -290,6 +319,9 @@ const RecordingWrappedView = (props) => {
       {props.children}
       {<Container className={audioUrl ? "border border-solid border-gray-100 rounded-lg p-4": ""}>
         <div id="waveform" style={{ height: 120, visibility: audioUrl ? 'visible' : 'hidden', zIndex: 1 }}></div>
+        <Text className="border border-solid border-gray-100 rounded-lg p-4">
+          {props.currentMessage?.text}
+        </Text>
         {<ReactPlayer
           url={audioUrl}
           width="90%"
@@ -304,6 +336,17 @@ const RecordingWrappedView = (props) => {
             marginTop: 16
           }}
         />}
+        <br/>
+        <Button className="m-2" onClick={() => { alert("RLHF coming soon") }} style={{
+          fontSize: 20,
+        }}>
+          <HandThumbUpIcon className="h-6 w-6 text-green-500"></HandThumbUpIcon>
+        </Button>
+        <Button className="m-2" onClick={() => { alert("RLHF coming soon") }} style={{
+          fontSize: 20
+        }}>
+          <HandThumbDownIcon className="h-6 w-6 text-red-500"></HandThumbDownIcon>
+        </Button>
       </Container>}
       {/* <div className="w-full">
         <Button disabled={!mediaBlobUrl} style={{ color: "#f87077" }} onClick={() => deleteRecording()}><XCircleIcon /> Delete</Button>

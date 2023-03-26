@@ -6,7 +6,7 @@ import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from
   import RecordView from './AudioRecorder/Recorder';
 import { LoremIpsum } from "lorem-ipsum";
 import chatApi, { generateGuardianMessage } from '../api/chat'
-import { Button, Text, Container, Select } from '@chakra-ui/react';
+import { Button, Text, Container, Select, CircularProgress, CircularProgressLabel, Center } from '@chakra-ui/react';
 
 // import './Message.css';
 
@@ -90,7 +90,7 @@ function MessageClient() {
     // let modelName = isGPTMessage ? '21m00Tcm4TlvDq8ikWAM': 'TxGEqnHWrfWFTfGW9XjX'
     if (mostRecentMessage) {
       chatApi.generateSpeechFromText(mostRecentMessage.text, modelName).then((response) => {
-        console.log("response", response)
+        // console.log("response", response)
         let audioBlob = response.data
         const blob = new Blob([audioBlob], { type: 'audio/mpeg' });
         const audioUrl = URL.createObjectURL(blob);
@@ -157,14 +157,15 @@ function MessageClient() {
       <div style={{ position:"relative" }}>
       {<Container className="border border-solid border-gray-300 rounded-lg p-4 mb-8 containerWithShadow">
         <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Live call'}</Text>
-        {<Button colorScheme={"teal"} type="primary" loading={true} disabled={false} onClick={() => {
+        {<Button colorScheme={"teal"} type="primary" isLoading={messages.length == 0} loadingText="Starting call" disabled={false} onClick={() => {
           setMessages([])
+          setAllAudio([])
           generateInitialGuardianMessage([], fraudTopic)
-        }}>{allAudio?.length ? 'Restart': 'Start'} Call</Button>}
+        }}>{allAudio?.length >= 0 ? 'Restart': 'Starting'} Call</Button>}
         <Text className="text-xs text-center width-full">
           OR
         </Text>
-        <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Use pre-existing robo call'}</Text>
+        <Text className="uppercase text-gray-600 font-bold font-base" style={{ fontSize: 12 }}>{'Robo call fraud type'}</Text>
         <Select placeholder='Select option' defaultValue={'bank account'} value={fraudTopic} onChange={(e) => {
           let option = e.target.value
           setFraudTopic(option)
@@ -189,6 +190,7 @@ function MessageClient() {
           playingAudio={playingAudio}
           currentAudioUser={currentAudioUser}
           allAudio={allAudio}
+          currentMessage={messages.slice().pop()}
           currentAudioStreamUrl={currentAudioStreamUrl}
           onStopPlaying={onStopPlaying}
           onRecordStarted={() => {
@@ -271,11 +273,20 @@ function MessageClient() {
           </div>
           <Container className="border border-solid border-gray-300 rounded-lg p-4 my-8">
             <Text
-              className='uppercase font-bold font-lg'
+              className='w-full uppercase font-bold font-lg text-left'
               style={{
                 color: roboScore > 60 ? "red": "green"
               }}
-            >Robo-score: {roboScore}</Text>
+            >Robo-score:</Text>
+            <Center>
+              <CircularProgress value={roboScore} color={roboScore > 60 ? 'red.400': roboScore < 50 ? 'green.400': 'yellow.400'}>
+                <CircularProgressLabel>{`${roboScore}%`}</CircularProgressLabel>
+              </CircularProgress>
+              <Text>
+                {roboScore > 60 ? 'Likely to be a robo call': roboScore > 80 ? 'High likely to be a robo call': roboScore > 95 ? 'Guaranteed  to be a robo call': 'Needs more information'}
+              </Text>
+            </Center>
+
           </Container>
         </RecordView>
       </div>
