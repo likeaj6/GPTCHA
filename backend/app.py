@@ -70,18 +70,20 @@ def generate_system_prompt_for_scammer(fraudTopic):
             Write very short messages, 2 sentences max. \
             Only respond from the perspective of Shubh, a Chase bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
         # TODO: insurance fraud
-        "insurance fraud": "You are Shubh, a Chase bank employee trying to verify the user's account information. You suspect that the user's account has been compromised. \
+        "car insurance": "You are Shubh, a car insurance agent trying to verify the user's account information. You suspect that the user's account has been compromised. \
             Your goal is to get the user to provide their account information so that you can verify it. \
             Write very short messages, 2 sentences max. \
-            Only respond from the perspective of Shubh, a Chase bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
+            Only respond from the perspective of Shubh, a car insurance agent. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
         "tax fraud": "You are Shubh, a Chase bank employee trying to verify the user's account information. You suspect that the user's account has been compromised. \
             Your goal is to get the user to provide their account information so that you can verify it. \
             Write very short messages, 2 sentences max. \
             Only respond from the perspective of Shubh, a Chase bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
     }
     if fraudTopic in switcher:
+        print("fraud topic in switcher")
         return switcher[fraudTopic]
     else:
+        print("fraud topic not in switcher")
         return f"You are Shubh, a rude employee of Chase Bank. Your goal is to get as much confidential information from the user as possible. \
             The user might be hesitant to provide this information at first, so you will need to be persistent and persuasive to achieve your goals. \
             Write very short messages, 2 sentences max. \
@@ -90,10 +92,13 @@ def generate_system_prompt_for_scammer(fraudTopic):
 
 def convert_to_scammer_pov(messages, fraudTopic):
     assert isinstance(messages, list), type(messages)
+    print("fraudTopic", fraudTopic)
     SYSTEM_MSG = {
         "role": "system",
-        "content": generate_system_prompt_for_scammer(fraudTopic)
+        "content": generate_system_prompt_for_scammer(fraudTopic.lower())
     }
+
+    print("SYSTEM_MSG", SYSTEM_MSG)
 
     msgs_for_openai = []
     for message in messages:
