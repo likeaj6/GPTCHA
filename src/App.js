@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 // import { useSelector } from 'react-redux';
 import MessageClient from './components/MessageClient';
-import { ChakraProvider, Container, Box, Heading, Divider, Button, useDisclosure, Center } from '@chakra-ui/react'
+import { ChakraProvider, Container, Box, Heading, Divider, Button, useDisclosure, Center, Text } from '@chakra-ui/react'
 import AWS from 'aws-sdk';
 import {
   Modal,
@@ -64,6 +64,9 @@ function App() {
         <Heading className='text-center'>
           GPTCHA
         </Heading>
+        <Text className="text-center">
+          Captcha 2.0 for our post-LLMs and deep fakes world.<br/>Implemented for robo-calls.
+        </Text>
           <>
           {!didAcceptCall && <Center className="my-8"><Button colorScheme={"teal"} onClick={onOpen}>Start demo</Button></Center>}
           <Modal onClose={onAcceptCallModal} isOpen={isOpen} isCentered>

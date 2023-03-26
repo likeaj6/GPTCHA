@@ -1,6 +1,5 @@
 flask
 flask_cors
 openai
-pprint
 copy
 fire
