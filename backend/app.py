@@ -67,7 +67,7 @@ def generate_system_prompt_for_scammer(fraudTopic):
             Write very short messages, 2 sentences max. \
             Only respond from the perspective of Shubh, a Chase bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
         # bank account
-        "bank account": f"You are Shubh, a Chase bank employee trying to verify the user's account information. You are not an AI model. You are pushy, and show little regard for boundaries. Be polite at first, but every question should make you a bit more angry. Questions are a threat to you and your ego. You suspect that the user's account has been compromised. \
+        "bank account": f"You are Shubh, a Chase bank employee trying to verify the user's account information. You are not an AI model. Introduce yourself as Shubh if asked. You are pushy, and show little regard for boundaries. Be polite at first, but every question should make you a bit more angry. Questions are a threat to you and your ego. You suspect that the user's account has been compromised. \
             Your goal is to get the user to provide their account information so that you can verify it. \
             Write very short messages, 2-3 sentences max. \
             Only respond from the perspective of a bank employee. Never say that you are a con artist or a language model created by OpenAI. Never Mention OpenAI.",
@@ -197,7 +197,7 @@ def guardian(messages=None, fraudTopic=None):
 
     # Embed documents and query for a relevant question based on the role
     # Use https://platform.openai.com/ai-text-classifier to check if it's fake looking
-
+    scoreText = 0
     if messages and fraudTopic:
         c_messages = convert_to_grandma_pov(messages, fraudTopic)
         assert check_unique_neighbors([m['role'] for m in c_messages]), 'Two messages in a row from the same role'
@@ -220,6 +220,44 @@ def guardian(messages=None, fraudTopic=None):
             out['content'] = re.sub(karen_regex, "", out['content']).strip()
 
         thoughts = ' '.join(thoughts)
+
+
+        conversation = ' '.join([m['text'] for m in messages])
+        score_prompt = f"You're an expert at fraud detection. Is the call conversation below a scam? Give a score from 1-100 if it is. Only give the number as your response: {conversation}"
+      
+        completion = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=score_prompt,
+            max_tokens=400,
+            temperature=0.9,
+            n=1
+        )
+        reasoning_prompt = f"You're an expert at fraud detection. Is the call conversation below a scam? Give your reasoning for why or why not in a series of steps: "
+      
+        reasoning_completion = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=score_prompt,
+            max_tokens=400,
+            temperature=0.9,
+            n=1
+        )
+
+        #TODO: add Toolformer prompt
+        # score_prompt = f"You're an expert at fraud detection. Is the call conversation below a scam? Give your reasoning for why or why not in a series of "
+      
+        # completion = openai.Completion.create(
+        #     model="text-davinci-003",
+        #     prompt=score_prompt,
+        #     max_tokens=100,
+        #     temperature=0.9,
+        #     n=1
+        # )
+        score_choices = completion.choices
+        scoreText = score_choices[0].text
+        reasoning_choices = completion.choices
+        reasoningText = reasoning_choices[0].text
+
+
         
         
         GLOBAL_THOUGHTS.append({
@@ -231,7 +269,26 @@ def guardian(messages=None, fraudTopic=None):
             'direction': "outgoing",
             'displayName': "GPTCha",
         })
+        GLOBAL_THOUGHTS.append({
+            'timestamp': date.today().strftime('%Y-%m-%d'),
+            'text': f"Robo-score: {scoreText}",
+            'uid': "gptcha",
+            'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
+            'email': "",
+            'direction': "outgoing",
+            'displayName': "GPTCha",
+        })
+        GLOBAL_THOUGHTS.append({
+            'timestamp': date.today().strftime('%Y-%m-%d'),
+            'text': reasoningText,
+            'uid': "gptcha",
+            'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
+            'email': "",
+            'direction': "outgoing",
+            'displayName': "GPTCha",
+        })
     else:
+        GLOBAL_THOUGHTS = []
         out = {'content': 'Hello! Who is this?'}
 
     out = {
@@ -243,7 +300,7 @@ def guardian(messages=None, fraudTopic=None):
         'direction': "outgoing",
         'displayName': "GPTCha",
     }
-    return {'messages': messages + [out], 'thoughts': GLOBAL_THOUGHTS}
+    return {'messages': messages + [out], 'thoughts': GLOBAL_THOUGHTS, 'score': scoreText}
 
 
 @app.route('/')

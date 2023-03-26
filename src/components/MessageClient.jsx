@@ -71,6 +71,7 @@ function MessageClient() {
       setMessageIsStreaming(false)
         let newMessages = response.data.messages
         let newThoughts = response.data.thoughts
+        let scoreText = response.data.scoreText
         if (newMessages.length > 0) {
           setMessages(newMessages)
           generateAudioSynthesis(newMessages)
@@ -81,6 +82,7 @@ function MessageClient() {
           setThoughts(newThoughts)
           // thoughts.map((message) => addThoughts(message))
         }
+        setRoboScore(scoreText)
     })
   }
 
@@ -150,14 +152,15 @@ function MessageClient() {
       // }, 3000)
     }
     if (messages.length > 0 && messages.length < NUM_INITIAL_MESSAGES && messages.slice(-1).pop().uid == "robo-caller" && !currentAudioStateRef.current) {
-      generateNextGuardianMessage(messages)
-      // setTimeout(() => {
-      // }, 3000)
+      setTimeout(() => {
+        generateNextGuardianMessage(messages)
+      }, 3000)
     }
   }, [messages, playingAudio])
 
-  let roboScore = Math.min(Math.round(Math.random()*60 * messages.length) + 50, 100)
+  let [roboScore, setRoboScore] = useState()
 
+  // Math.min(Math.round(Math.random()*60 * messages.length) + 50, 100)
   return (
     <div className="">
       <div style={{ position:"relative" }}>
