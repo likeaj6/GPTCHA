@@ -233,10 +233,11 @@ def guardian(messages=None, fraudTopic=None):
             n=1
         )
         reasoning_prompt = f"You're an expert at fraud detection. Is the call conversation below a scam? Give your reasoning for why or why not in a series of steps: "
+        semantic_search = f"Verifying information via semantic search..."
       
         reasoning_completion = openai.Completion.create(
             model="text-davinci-003",
-            prompt=score_prompt,
+            prompt=reasoning_prompt,
             max_tokens=400,
             temperature=0.9,
             n=1
@@ -253,9 +254,9 @@ def guardian(messages=None, fraudTopic=None):
         #     n=1
         # )
         score_choices = completion.choices
-        scoreText = score_choices[0].text
+        scoreText = score_choices[0].text.trim()
         reasoning_choices = completion.choices
-        reasoningText = reasoning_choices[0].text
+        reasoningText = reasoning_choices[0].text.trim()
 
 
         
@@ -271,7 +272,7 @@ def guardian(messages=None, fraudTopic=None):
         })
         GLOBAL_THOUGHTS.append({
             'timestamp': date.today().strftime('%Y-%m-%d'),
-            'text': f"Robo-score: {scoreText}",
+            'text': semantic_search,
             'uid': "gptcha",
             'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
             'email': "",
@@ -281,6 +282,15 @@ def guardian(messages=None, fraudTopic=None):
         GLOBAL_THOUGHTS.append({
             'timestamp': date.today().strftime('%Y-%m-%d'),
             'text': reasoningText,
+            'uid': "gptcha",
+            'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
+            'email': "",
+            'direction': "outgoing",
+            'displayName': "GPTCha",
+        })
+        GLOBAL_THOUGHTS.append({
+            'timestamp': date.today().strftime('%Y-%m-%d'),
+            'text': f"Robo-score: {scoreText}",
             'uid': "gptcha",
             'photo': "https://seeklogo.com/images/C/chatgpt-logo-02AFA704B5-seeklogo.com.png",
             'email': "",

@@ -185,11 +185,11 @@ const RecordingWrappedView = (props) => {
   return (
     <div className="p-4">
       <Container className="border border-solid border-gray-300 rounded-lg p-4">
-      {<Button disabled={!isRecording || audioUrl} onClick={() => {
+      {/* {<Button disabled={!isRecording || audioUrl} onClick={() => {
         stopRecording()
         setEnd(moment())
-      }}>Transcribe Audio Snippet</Button>}
-      <WhisperTranscriptionsMap />
+      }}>Transcribe Audio Snippet</Button>} */}
+      {/* <WhisperTranscriptionsMap /> */}
       {<div style={{
         position: "relative", marginTop: 8, height: 160 }}>
         <div style={{ position: "relative", display: 'flex', flexDirection: "row", width: "100%", marginRight: 8 }}>
