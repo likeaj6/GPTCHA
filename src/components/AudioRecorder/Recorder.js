@@ -62,8 +62,8 @@ const RecordingWrappedView = (props) => {
   };
 
   useEffect(() => {
-    let handle;
-    // let handle = setInterval(updateTime, 1000)
+    // let handle;
+    let handle = setInterval(updateTime, 1000)
     // setTimeout(() => {
     //   if (visualizerRef.current) {
     //     let canvas = visualizerRef.current
