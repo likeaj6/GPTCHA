@@ -22,9 +22,19 @@ let exampleMessages = []
 //   direction: "outgoing",
 //   displayName: "GPTCha",
 // }]
+let exampleThoughts = [{
+  timestamp: new Date(),
+  text: "GPTCHA's internal logic",
+  uid: "gptcha",
+  photo: GPTLogo,
+  email: "",
+  direction: "outgoing",
+  displayName: "GPTCha",
+}]
 
 function MessageClient() {
   const [messages, setMessages] = useState(exampleMessages);
+  const [thoughts, setThoughts] = useState(exampleThoughts);
   const [messageIsStreaming, setMessageIsStreaming] = useState(false);
   const [currentAudioStreamUrl, setCurrentAudioStreamUrl] = useState(null);
   const [currentAudioUser, setCurrentAudioUser] = useState("gptcha");
@@ -34,6 +44,9 @@ function MessageClient() {
 
   const addMessage = (message) => {
     setMessages((messages) => [...messages, message]);
+  }
+  const addThoughts = (message) => {
+    setThoughts((messages) => [...messages, message]);
   }
 
   const generateNextRoboMessage = async (currentMessages) => {
@@ -54,10 +67,16 @@ function MessageClient() {
     chatApi.generateGuardianMessage(currentMessages).then((response) => {
       setMessageIsStreaming(false)
         let newMessages = response.data.messages
+        let newThoughts = response.data.thoughts
         if (newMessages.length > 0) {
           setMessages(newMessages)
           generateAudioSynthesis(newMessages)
           // messages.map((message) => addMessage(message))
+        }
+        console.log("newThoughts", newThoughts)
+        if (newThoughts.length > 0) {
+          setThoughts(newThoughts)
+          // thoughts.map((message) => addThoughts(message))
         }
     })
   }
@@ -65,7 +84,10 @@ function MessageClient() {
   const generateAudioSynthesis = async (currentMessages) => {
     let mostRecentMessage = currentMessages.slice(-1).pop()
     let isGPTMessage = mostRecentMessage.uid == "gptcha"
-    let modelName = isGPTMessage ? '21m00Tcm4TlvDq8ikWAM': 'TxGEqnHWrfWFTfGW9XjX'
+    let indian_male = "FeRac7RecyPzJ8JYNgQL"
+    let american_female_old = "RgXs1J7z2juXOZc1xQ6t"
+    let modelName = isGPTMessage ? american_female_old: indian_male
+    // let modelName = isGPTMessage ? '21m00Tcm4TlvDq8ikWAM': 'TxGEqnHWrfWFTfGW9XjX'
     if (mostRecentMessage) {
       chatApi.generateSpeechFromText(mostRecentMessage.text, modelName).then((response) => {
         console.log("response", response)
@@ -111,7 +133,7 @@ function MessageClient() {
     }
   }
 
-  let NUM_INITIAL_MESSAGES = 2
+  let NUM_INITIAL_MESSAGES = 4
 
   useEffect(() => {
     console.log("playingAudio", playingAudio)
@@ -126,7 +148,7 @@ function MessageClient() {
   let roboScore = Math.min(Math.round(Math.random()*100) + 50, 100)
 
   return (
-    <div className="Message">
+    <div className="">
       <div style={{ position:"relative" }}>
         <RecordView
           currentAudioUser={currentAudioUser}
@@ -148,13 +170,51 @@ function MessageClient() {
           // addMessage(testMessage);
           // setMessages([...messages, testMessage]);
         }} onUpload={() => {}}>
-
-          <MainContainer className='flex w-full my-8 rounded-lg border border-solid border-gray-100'>
-            <Chat 
-              messages={messages}
-              messageIsStreaming={messageIsStreaming}
-            />
-          </MainContainer>
+          <div className='flex flex-row'>
+            <MainContainer className='flex w-full my-8 rounded-lg border border-solid border-gray-100'>
+              <Chat 
+                messages={messages}
+                messageIsStreaming={messageIsStreaming}
+                showMessageInput={true}
+                sendMessage={(text) => {
+                  let testMessage = {
+                    timestamp: new Date(),
+                    text: text,
+                    uid: "robo-caller",
+                    direction: "incoming",
+                    photo: roboIcon,
+                    email: "",
+                    displayName: "Robot Caller",
+                  }
+                  addMessage(testMessage)
+                  generateNextGuardianMessage([...messages, testMessage])
+                }}
+              />
+            </MainContainer>
+            <MainContainer className='absolute w-2/3 my-8 rounded-lg border border-solid border-gray-100' style={{
+              position: "absolute", right: -400, top: 0
+            }}>
+              <Chat 
+                chatHeight={"70vh"}
+                messages={thoughts}
+                messageIsStreaming={messageIsStreaming}
+                // hideMessageInput={true}
+                sendMessage={(text) => {
+                  let testMessage = {
+                    timestamp: new Date(),
+                    text: text,
+                    uid: "robo-caller",
+                    direction: "incoming",
+                    photo: roboIcon,
+                    email: "",
+                    displayName: "Robot Caller",
+                  }
+                  addMessage(testMessage)
+                  generateNextGuardianMessage([...messages, testMessage])
+                }}
+              />
+            </MainContainer>
+          </div>
           <div className='flex w-full align-center items-center'>
             <Button 
               loadingText='Loading'

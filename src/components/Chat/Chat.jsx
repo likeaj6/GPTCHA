@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Chat.css';
 // import { IconButton } from '@material-ui/core';
 // import MicNoneIcon from '@material-ui/icons/MicNone';
-import { ChatContainer, MessageList, Message, Avatar } from '@chatscope/chat-ui-kit-react';
+import { ChatContainer, MessageList, Message, Avatar, MessageInput } from '@chatscope/chat-ui-kit-react';
 // import { useSelector } from 'react-redux';
 // import { selectUser } from '../../../features/userSlice';
 // import { selectChatId, selectChatName } from '../../../features/chatSlice';
@@ -40,7 +40,7 @@ let exampleMessages = [{
 
 
 function Chat(props) {
-  const { messages } = props
+  const { messages, chatHeight } = props
   const [input, setInput] = useState('');
   // const user = useSelector(selectUser);
   // const chatName = useSelector(selectChatName);
@@ -61,8 +61,9 @@ function Chat(props) {
     // }
   }, []);
 
-  const sendMessage = (e) => {
-    e.preventDefault();
+  const sendMessage = () => {
+    // e.preventDefault();
+    props.sendMessage(input)
     // db.collection('chats').doc(chatId).collection('messages').add({
     //   timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     //   message: input,
@@ -78,7 +79,7 @@ function Chat(props) {
   return (
     <ChatContainer>
       <MessageList style={{
-        height: "33vh", overflow: "scroll", padding: 16, borderRadius: 8
+        height: chatHeight ?? "33vh", overflow: "scroll", padding: 16, borderRadius: 8
       }}>
         {/* <Message model={{
             message: "Hello world",
@@ -100,6 +101,10 @@ function Chat(props) {
             </Message>)
         })}
       </MessageList>
+      {process.env.NODE_ENV == "development" && props.showMessageInput && <MessageInput
+        onChange={(innerHtml, textContent, value, nodes) => setInput(value)}
+        onSend={sendMessage}
+      />}
     </ChatContainer>
   );
 }
