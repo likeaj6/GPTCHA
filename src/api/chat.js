@@ -3,8 +3,8 @@ import axios from 'axios'
 let isProd = true || process.env.NODE_ENV === "production"
 let apiEndpoint = isProd ? 'https://gptcha-backend.onrender.com':'https://5023-12-94-170-82.ngrok.io'
 // let apiEndpoint = 'https://gptcha-backend.onrender.com'
-let UNREAL_SPEECH_API_KEY = process.env.UNREAL_SPEECH_API_KEY
-let ELEVEN_LABS_API_KEY = process.env.ELEVEN_LABS_API_KEY
+let UNREAL_SPEECH_API_KEY = process.env.REACT_APP_UNREAL_SPEECH_API_KEY
+let ELEVEN_LABS_API_KEY = process.env.REACT_APP_ELEVEN_LABS_API_KEY
 
 export const generateRoboMessage = (messages=[]) => {
   // console.log("isOnboarding", isOnboarding)
@@ -46,7 +46,7 @@ export const generateSpeechFromText = (text, voiceId='TxGEqnHWrfWFTfGW9XjX') => 
     }
   }
   let devUrl = process.env.NODE_ENV === 'development' ? 'https://cors-anywhere.herokuapp.com/' : ''
-  console.log("ELEVEN_LABS_API_KEY", ELEVEN_LABS_API_KEY)
+  console.log("ELEVEN_LABS_API_KEY", process.env, ELEVEN_LABS_API_KEY)
   return axios.post(
   `${devUrl}https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
   body,
