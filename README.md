@@ -1,70 +1,35 @@
-# Getting Started with Create React App
+# GPTCHA - Winner of "AI for Good" Hackathon 🎉🏆
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+We are excited, grateful, and deeply honored to share GPTCHA, the winner of the ["AI for Good" Hackathon](https://partiful.com/e/9ft7v8NYnFin5BL3p9Ar)! This project represents a new era of Captcha 2.0, specifically designed to combat malicious uses of generative AI and mitigate the impact of robocalls.
 
-## Available Scripts
+The conception, development, and achievement of GPTCHA couldn't have been possible without the outstanding collaboration between our team members, [@nearlydaniel](twitter.com/nearlydaniel), [@nicolas_ouporov](twitter.com/nicolas_ouporov), and [@jasonljin](twitter.com/jasonljin). Our journey to this achievement started with an invitation from [@edchucation](twitter.com/edchucation) to the hackathon, bringing us together to brainstorm, develop and deploy our solution. A special shout-out to [Atmosphere House](http://atmosphere.house) where three of our team members reside!
 
-In the project directory, you can run:
+[Demo Video Here](https://twitter.com/jasonljin/status/1640194628380151808)
 
-### `npm start`
+[Discussion Thread Here](https://twitter.com/DrJimFan/status/1640733297314775040)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 💡 The Idea 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Inspired by the promise and peril of AI, we devised GPTCHA to counteract the increasingly sophisticated robo-calls and scams. These malicious activities account for 60% of all calls, contributing to an estimated $180 billion dollar losses due to fraud in the US alone.
 
-### `npm test`
+The idea was to leverage the power of AI for good, to devise a system capable of detecting and preventing these threats. This resulted in GPTCHA, a tool that embodies an adversarial dialogue between two AI agents, aimed to automate the process of distinguishing between robocalls and genuine human calls.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ How It Works
 
-### `npm run build`
+GPTCHA is a two-tier system, each powered by GPT-4. One agent is oriented towards protecting your information, while the other is programmed to attempt phishing your information. Through this adversarial interplay, GPTCHA is able to discern AI-generated responses with an impressive degree of accuracy.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+But it doesn't stop there. Our system also utilizes semantic search, vector-based search, and text embeddings to fact-check and verify information, adding another layer of security against potential threats. Moreover, it employs custom voice models via @elevenlabsio and Whisper for speech recognition and synthesis. It even supports cloned voices - we've trained an AI to mimic a human voice, bringing more realism to the interaction.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+[Here's a demo of GPTCHA in action!](http://gptcha.vercel.app)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🙏 Our Appreciation
 
-### `npm run eject`
+Winning the "AI for Good" Hackathon has been an exhilarating and humbling experience. We are immensely grateful to @internetactivism, @cerebralvalley, and @openai for hosting this wonderful event. Our victory is a testament to the great potential AI holds when used responsibly and creatively for the betterment of society.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+We also wish to extend our heartfelt gratitude to our partners and sponsors @huggingface, @pinecone, @weaviate, @pearvc, @instacart, and @AnthropicAI. Their support played a pivotal role in our success.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+A special thank you goes out to @AviSchiffmann and the rest of the @internetactvsm team for putting together the incredible "AI for Good" Hackathon!
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🌐 The Future
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+We are thrilled about the good this technology can do when deployed at scale and are excited to share our future developments. GPTCHA represents a promising step towards a safer, more secure communication space.
